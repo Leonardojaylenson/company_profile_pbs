@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : database
+ Source Server         : localhost_3306
  Source Server Type    : MySQL
- Source Server Version : 100432 (10.4.32-MariaDB)
+ Source Server Version : 100428
  Source Host           : localhost:3306
  Source Schema         : pbs_db
 
  Target Server Type    : MySQL
- Target Server Version : 100432 (10.4.32-MariaDB)
+ Target Server Version : 100428
  File Encoding         : 65001
 
- Date: 09/05/2026 23:55:48
+ Date: 20/05/2026 21:30:56
 */
 
 SET NAMES utf8mb4;
@@ -31,7 +31,7 @@ CREATE TABLE `activity_log`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `admin_id`(`admin_id` ASC) USING BTREE,
   CONSTRAINT `activity_log_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `admins` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of activity_log
@@ -56,7 +56,7 @@ CREATE TABLE `admins`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username` ASC) USING BTREE,
   UNIQUE INDEX `email`(`email` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of admins
@@ -77,7 +77,7 @@ CREATE TABLE `gallery`  (
   `sort_order` int NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of gallery
@@ -99,7 +99,7 @@ CREATE TABLE `messages`  (
   `is_replied` tinyint(1) NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of messages
@@ -125,7 +125,7 @@ CREATE TABLE `news`  (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `slug`(`slug` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of news
@@ -147,7 +147,7 @@ CREATE TABLE `routes`  (
   `is_active` tinyint(1) NULL DEFAULT 1,
   `sort_order` int NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of routes
@@ -179,13 +179,13 @@ CREATE TABLE `services`  (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `slug`(`slug` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of services
 -- ----------------------------
 INSERT INTO `services` VALUES (1, 'Lost Cargo / LCL', 'lost-cargo-lcl', 'bi-box-seam', NULL, 'Layanan pengiriman muatan satuan (Less than Container Load) yang ekonomis untuk berbagai jenis barang.', 'Layanan Lost Cargo atau Less than Container Load (LCL) adalah solusi ideal bagi Anda yang ingin mengirimkan barang dalam jumlah yang belum mencukupi satu kontainer penuh. Muatan Anda akan digabungkan dengan muatan pengirim lain sehingga biaya menjadi lebih efisien. Kami menjamin keamanan dan keselamatan barang Anda selama proses pengiriman.', '[\"Biaya lebih ekonomis untuk muatan kecil\",\"Pengiriman ke seluruh wilayah Indonesia\",\"Pengemasan profesional & aman\",\"Tracking real-time\",\"Asuransi pengiriman tersedia\",\"Pickup & delivery tersedia\"]', 1, 1, 1, '2026-05-06 19:56:39', '2026-05-09 23:52:41');
-INSERT INTO `services` VALUES (2, 'Full Container Load / FCL', 'full-container-load-fcl', 'bi-grid-3x3-gap', NULL, 'Sewa kontainer penuh untuk muatan besar. Tersedia ukuran 20 feet dan 40 feet sesuai kebutuhan.', 'Full Container Load (FCL) adalah layanan penyewaan kontainer secara utuh untuk memenuhi kebutuhan pengiriman barang dalam skala besar. Dengan FCL, muatan Anda tidak akan bercampur dengan muatan orang lain, memberikan keamanan dan privasi penuh bagi barang Anda. Kami menyediakan kontainer 20 feet dan 40 feet.', '[\"Kontainer 20ft & 40ft tersedia\",\"Keamanan muatan lebih terjamin\",\"Cocok untuk muatan besar\",\"Fleksibel jadwal keberangkatan\",\"Layanan stuffing & unstuffing\",\"Dokumen B/L & manifes lengkap\"]', 1, 1, 2, '2026-05-06 19:56:39', '2026-05-06 19:56:39');
+INSERT INTO `services` VALUES (2, 'Full Container Load / FCL', 'full-container-load-fcl', 'bi-grid-3x3-gap', NULL, 'Sewa kontainer penuh untuk muatan besar. Tersedia ukuran mulai dari 20 feet dan 40 feet sesuai kebutuhan.', 'Full Container Load (FCL) adalah layanan penyewaan kontainer secara utuh untuk memenuhi kebutuhan pengiriman barang dalam skala besar. Dengan FCL, muatan Anda tidak akan bercampur dengan muatan orang lain, memberikan keamanan dan privasi penuh bagi barang Anda. Kami menyediakan kontainer 20 feet dan 40 feet.', '[\"Kontainer 20ft & 40ft tersedia\",\"Keamanan muatan lebih terjamin\",\"Cocok untuk muatan besar\",\"Fleksibel jadwal keberangkatan\",\"Layanan stuffing & unstuffing\",\"Dokumen B/L & manifes lengkap\"]', 1, 1, 2, '2026-05-06 19:56:39', '2026-05-20 21:30:18');
 INSERT INTO `services` VALUES (3, 'Freight Forwarding', 'freight-forwarding', 'bi-truck', NULL, 'Layanan pengurusan seluruh proses pengiriman, dari pengemasan, dokumentasi, hingga pengiriman ke tujuan.', 'Freight Forwarding adalah layanan manajemen logistik terpadu yang menangani seluruh aspek pengiriman barang Anda. Tim profesional kami akan mengurus semua proses, mulai dari pengambilan barang, pengemasan, dokumentasi ekspor-impor, pemrosesan bea cukai, hingga pengiriman akhir ke tujuan Anda.', '[\"Pengurusan dokumen ekspor-impor\",\"Clearance bea cukai\",\"Pengemasan & labeling\",\"Asuransi kargo\",\"Koordinasi multi-moda transportasi\",\"Laporan pengiriman real-time\"]', 1, 1, 3, '2026-05-06 19:56:39', '2026-05-06 19:56:39');
 INSERT INTO `services` VALUES (4, 'Ekspor - Impor', 'ekspor-impor', 'bi-arrow-left-right', NULL, 'Konsultasi dan pengurusan dokumen ekspor-impor, termasuk bea cukai, NPIK, dan perizinan lainnya.', 'Layanan ekspor-impor kami mencakup pengurusan semua dokumen dan perizinan yang diperlukan untuk kegiatan perdagangan internasional. Kami memiliki tim ahli yang berpengalaman dalam regulasi bea cukai Indonesia dan internasional, memastikan barang Anda melewati proses clearance dengan cepat dan tepat.', '[\"Pengurusan dokumen L/C\",\"Customs clearance\",\"Pengurusan NPIK & API\",\"Konsultasi regulasi perdagangan\",\"PIB & PEB processing\",\"PPJK berpengalaman\"]', 1, 1, 4, '2026-05-06 19:56:39', '2026-05-06 19:56:39');
 
@@ -201,7 +201,7 @@ CREATE TABLE `settings`  (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `setting_key`(`setting_key` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of settings
@@ -254,7 +254,7 @@ CREATE TABLE `team`  (
   `sort_order` int NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of team
@@ -276,7 +276,7 @@ CREATE TABLE `testimonials`  (
   `sort_order` int NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of testimonials

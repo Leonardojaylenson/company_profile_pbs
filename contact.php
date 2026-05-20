@@ -33,7 +33,7 @@ $wa = preg_replace('/[^0-9]/', '', $s['contact_whatsapp'] ?? '');
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
 <!-- Page Header -->
-<section class="page-header">
+<section class="page-header pt-5 mt-5">
     <div class="page-header-overlay"></div>
     <div class="container page-header-content">
         <h1 class="page-header-title" data-aos="fade-up">Hubungi Kami</h1>
@@ -47,7 +47,7 @@ $wa = preg_replace('/[^0-9]/', '', $s['contact_whatsapp'] ?? '');
     </div>
 </section>
 
-<section class="section-pad">
+<section class="section-pad pb-5 mb-4">
     <div class="container">
         <div class="row g-5">
             <!-- Info -->

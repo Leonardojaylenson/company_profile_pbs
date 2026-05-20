@@ -51,11 +51,11 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
         </button>
         <div class="collapse navbar-collapse" id="navMain">
             <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
-                <li class="nav-item"><a class="nav-link <?= $currentPage==='index'?'active':'' ?>" href="<?= BASE_URL ?>/">Beranda</a></li>
-                <li class="nav-item"><a class="nav-link <?= $currentPage==='about'?'active':'' ?>" href="<?= BASE_URL ?>/about.php">Tentang Kami</a></li>
-                <li class="nav-item"><a class="nav-link <?= $currentPage==='services'?'active':'' ?>" href="<?= BASE_URL ?>/services.php">Layanan</a></li>
-                <li class="nav-item"><a class="nav-link <?= $currentPage==='news'?'active':'' ?>" href="<?= BASE_URL ?>/news.php">Berita</a></li>
-                <li class="nav-item"><a class="nav-link <?= $currentPage==='contact'?'active':'' ?>" href="<?= BASE_URL ?>/contact.php">Kontak</a></li>
+                <li class="nav-item me-lg-4"><a class="nav-link <?= $currentPage==='index'?'active':'' ?>" href="<?= BASE_URL ?>/">Beranda</a></li>
+                <li class="nav-item me-lg-4"><a class="nav-link <?= $currentPage==='about'?'active':'' ?>" href="<?= BASE_URL ?>/about.php">Tentang Kami</a></li>
+                <li class="nav-item me-lg-4"><a class="nav-link <?= $currentPage==='services'?'active':'' ?>" href="<?= BASE_URL ?>/services.php">Layanan</a></li>
+                <li class="nav-item me-lg-4"><a class="nav-link <?= $currentPage==='news'?'active':'' ?>" href="<?= BASE_URL ?>/news.php">Berita</a></li>
+                <li class="nav-item me-lg-4"><a class="nav-link <?= $currentPage==='contact'?'active':'' ?>" href="<?= BASE_URL ?>/contact.php">Kontak</a></li>
                 <li class="nav-item ms-lg-2">
                     <a class="btn btn-primary btn-sm px-4 rounded-pill" href="<?= 'https://wa.me/' . preg_replace('/[^0-9]/', '', $s['contact_whatsapp'] ?? '') ?>">
                         <i class="bi bi-whatsapp me-1"></i> WhatsApp
@@ -63,13 +63,13 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                 </li>
                 <li class="nav-item ms-lg-2">
                     <?php if (isAdminLoggedIn()): ?>
-                        <a class="btn btn-outline-primary btn-sm px-4 rounded-pill" href="<?= BASE_URL ?>/admin/dashboard.php">
+                        <a class="btn btn-outline-primary btn-sm px-4 rounded-pill d-inline-flex align-items-center" href="<?= BASE_URL ?>/admin/dashboard.php" style="height: 38px;">
                             <i class="bi bi-speedometer2 me-1"></i> Dashboard
                         </a>
                     <?php else: ?>
-                        <a class="btn btn-outline-secondary btn-sm px-4 rounded-pill" href="<?= BASE_URL ?>/admin/login.php">
-                            <i class="bi bi-person-lock me-1"></i> Admin
-                        </a>
+                    <a class="btn btn-outline-dark btn-sm px-4 rounded-pill d-inline-flex align-items-center" href="<?= BASE_URL ?>/admin/login.php" style="height: 38px;">
+                         <i class="bi bi-person-lock me-2"></i> Admin
+                     </a>
                     <?php endif; ?>
                 </li>
             </ul>

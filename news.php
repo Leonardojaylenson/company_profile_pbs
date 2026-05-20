@@ -28,7 +28,7 @@ if ($id > 0) {
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
 <!-- Page Header -->
-<section class="page-header">
+<section class="page-header pt-5 mt-5">
     <div class="page-header-overlay"></div>
     <div class="container page-header-content">
         <h1 class="page-header-title" data-aos="fade-up"><?= $news ? htmlspecialchars($news['title']) : 'Berita & Informasi' ?></h1>
@@ -78,7 +78,7 @@ if ($id > 0) {
 
 <?php else: ?>
 <!-- ── LIST VIEW ── -->
-<section class="section-pad">
+<section class="section-pad pb-5 mb-4">
     <div class="container">
         <?php if (empty($allNews)): ?>
         <div class="text-center py-5">

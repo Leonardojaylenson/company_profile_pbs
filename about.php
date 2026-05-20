@@ -10,9 +10,9 @@ $pageTitle = 'Tentang Kami';
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
 <!-- Page Header -->
-<section class="page-header">
+<section class="page-header pt-5 mt-5">
     <div class="page-header-overlay"></div>
-    <div class="container page-header-content">
+    <div class="container page-header-content pt-4"> 
         <h1 class="page-header-title" data-aos="fade-up">Tentang PBS</h1>
         <p class="page-header-sub" data-aos="fade-up" data-aos-delay="100">Menghubungkan nusantara dengan layanan pengiriman laut terpercaya</p>
         <nav aria-label="breadcrumb" data-aos="fade-up" data-aos-delay="150">
@@ -129,7 +129,7 @@ $pageTitle = 'Tentang Kami';
 </section>
 
 <!-- Vision Mission -->
-<section class="section-pad bg-light">
+<section class="section-pad bg-light pb-5 mb-4">
     <div class="container">
         <div class="row justify-content-center text-center mb-5">
             <div class="col-lg-7" data-aos="fade-up">
