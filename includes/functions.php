@@ -77,17 +77,27 @@ function getGallery(): array {
 }
 
 // ── MESSAGES ─────────────────────────────────────────────────
-function saveMessage(array $data): bool {
-    $pdo  = getPDO();
-    $stmt = $pdo->prepare("INSERT INTO messages (name, email, phone, subject, message, cargo_type) VALUES (?, ?, ?, ?, ?, ?)");
-    return $stmt->execute([
-        sanitize($data['name']    ?? ''),
-        sanitize($data['email']   ?? ''),
-        sanitize($data['phone']   ?? ''),
-        sanitize($data['subject'] ?? ''),
-        sanitize($data['message'] ?? ''),
-        sanitize($data['cargo_type'] ?? 'Lainnya'),
-    ]);
+function saveMessage(array $data): bool
+{
+    $pdo = getPDO();
+    try {
+        $pdo->prepare("
+            INSERT INTO messages (name, email, phone, subject, message, cargo_type, cargo_type_id)
+            VALUES (:name, :email, :phone, :subject, :message, :cargo_type, :cargo_type_id)
+        ")->execute([
+            ':name'          => $data['name'],
+            ':email'         => $data['email']         ?? null,
+            ':phone'         => $data['phone']         ?? null,
+            ':subject'       => $data['subject']       ?? null,
+            ':message'       => $data['message'],
+            ':cargo_type'    => $data['cargo_type']    ?? 'Lainnya',
+            ':cargo_type_id' => $data['cargo_type_id'] ?? null,
+        ]);
+        return true;
+    } catch (PDOException $e) {
+        error_log('saveMessage error: ' . $e->getMessage());
+        return false;
+    }
 }
 
 // ── UPLOAD ────────────────────────────────────────────────────

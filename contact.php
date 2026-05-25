@@ -9,15 +9,32 @@ $pageTitle = 'Kontak';
 $success = false;
 $error   = '';
 
+// Ambil jenis muatan dari database (aktif, urut sort_order)
+$pdo = getPDO();
+$cargoTypes = $pdo->query("SELECT * FROM cargo_types WHERE is_active=1 ORDER BY sort_order ASC, name ASC")->fetchAll();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $cargoTypeId = (int)($_POST['cargo_type_id'] ?? 0);
+
+    // Cari nama cargo_type berdasarkan id yang dipilih
+    $cargoTypeName = 'Lainnya';
+    foreach ($cargoTypes as $ct) {
+        if ((int)$ct['id'] === $cargoTypeId) {
+            $cargoTypeName = $ct['name'];
+            break;
+        }
+    }
+
     $data = [
-        'name'       => trim($_POST['name']    ?? ''),
-        'email'      => trim($_POST['email']   ?? ''),
-        'phone'      => trim($_POST['phone']   ?? ''),
-        'subject'    => trim($_POST['subject'] ?? ''),
-        'message'    => trim($_POST['message'] ?? ''),
-        'cargo_type' => trim($_POST['cargo_type'] ?? 'Lainnya'),
+        'name'          => trim($_POST['name']    ?? ''),
+        'email'         => trim($_POST['email']   ?? ''),
+        'phone'         => trim($_POST['phone']   ?? ''),
+        'subject'       => trim($_POST['subject'] ?? ''),
+        'message'       => trim($_POST['message'] ?? ''),
+        'cargo_type'    => $cargoTypeName,   // nama teks (legacy / fallback)
+        'cargo_type_id' => $cargoTypeId > 0 ? $cargoTypeId : null,
     ];
+
     if (empty($data['name']) || empty($data['email']) || empty($data['message'])) {
         $error = 'Nama, email, dan pesan wajib diisi.';
     } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
@@ -124,33 +141,51 @@ $wa = preg_replace('/[^0-9]/', '', $s['contact_whatsapp'] ?? '');
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-600">Nama Lengkap *</label>
-                                <input type="text" name="name" class="form-control" placeholder="John Doe" required value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
+                                <input type="text" name="name" class="form-control" placeholder="John Doe" required
+                                       value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-600">Email *</label>
-                                <input type="email" name="email" class="form-control" placeholder="email@domain.com" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+                                <input type="email" name="email" class="form-control" placeholder="email@domain.com" required
+                                       value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-600">No. Telepon / WA</label>
-                                <input type="tel" name="phone" class="form-control" placeholder="08xxxxxxxxxx" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
+                                <input type="tel" name="phone" class="form-control" placeholder="08xxxxxxxxxx"
+                                       value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-600">Jenis Muatan</label>
-                                <select name="cargo_type" class="form-select">
-                                    <option value="FCL">FCL (Full Container Load)</option>
-                                    <option value="LCL">LCL (Less than Container Load)</option>
-                                    <option value="Break Bulk">Break Bulk</option>
-                                    <option value="Project Cargo">Project Cargo</option>
-                                    <option value="Lainnya">Lainnya</option>
+                                <select name="cargo_type_id" class="form-select">
+                                    <?php if (empty($cargoTypes)): ?>
+                                        <!-- Fallback statis jika tabel kosong -->
+                                        <option value="">Pilih Jenis Muatan</option>
+                                        <option value="">FCL (Full Container Load)</option>
+                                        <option value="">LCL (Less than Container Load)</option>
+                                        <option value="">Break Bulk</option>
+                                        <option value="">Project Cargo</option>
+                                        <option value="">Lainnya</option>
+                                    <?php else: ?>
+                                        <option value="">-- Pilih Jenis Muatan --</option>
+                                        <?php foreach ($cargoTypes as $ct): ?>
+                                        <option value="<?= $ct['id'] ?>"
+                                            <?= (isset($_POST['cargo_type_id']) && (int)$_POST['cargo_type_id'] === (int)$ct['id']) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($ct['name']) ?>
+                                        </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-600">Subjek</label>
-                                <input type="text" name="subject" class="form-control" placeholder="Pertanyaan tentang layanan pengiriman" value="<?= htmlspecialchars($_POST['subject'] ?? isset($_GET['service']) ? 'Pertanyaan tentang: ' . htmlspecialchars($_GET['service'] ?? '') : '') ?>">
+                                <input type="text" name="subject" class="form-control"
+                                       placeholder="Pertanyaan tentang layanan pengiriman"
+                                       value="<?= htmlspecialchars($_POST['subject'] ?? (isset($_GET['service']) ? 'Pertanyaan tentang: ' . ($_GET['service'] ?? '') : '')) ?>">
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-600">Pesan *</label>
-                                <textarea name="message" class="form-control" rows="5" placeholder="Tuliskan kebutuhan pengiriman Anda..." required><?= htmlspecialchars($_POST['message'] ?? '') ?></textarea>
+                                <textarea name="message" class="form-control" rows="5"
+                                          placeholder="Tuliskan kebutuhan pengiriman Anda..." required><?= htmlspecialchars($_POST['message'] ?? '') ?></textarea>
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary px-5 py-3 rounded-pill w-100">

@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'contact_phone','contact_whatsapp','contact_email','contact_address',
         'social_instagram','social_facebook','social_linkedin',
         'footer_copyright',
+        'smtp_gmail', 'smtp_app_password', 'smtp_from_name', 'smtp_reply_to',
+        'smtp_default_subject',
     ];
     foreach ($fields as $f) {
         if (isset($_POST[$f])) {
@@ -81,6 +83,7 @@ $s = getAllSettings();
                     <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-contact">Kontak</button></li>
                     <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-social">Sosial Media</button></li>
                     <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-stats">Statistik</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-smtp">Email SMTP</button></li>
                 </ul>
 
                 <div class="tab-content">
@@ -253,6 +256,56 @@ $s = getAllSettings();
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- SETUP SMTP -->
+                    <div class="tab-pane fade" id="tab-smtp">
+                        <div class="adm-card">
+                            <div class="adm-card-header"><h5>Konfigurasi Email SMTP (Gmail)</h5></div>
+                            <div class="adm-card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="adm-form-label">Gmail Address</label>
+                                        <input type="email" name="smtp_gmail" class="adm-input"
+                                            value="<?= htmlspecialchars($s['smtp_gmail'] ?? '') ?>"
+                                            placeholder="nama@gmail.com">
+                                        <p class="adm-form-hint">Akun Gmail yang dipakai untuk mengirim email.</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="adm-form-label">App Password</label>
+                                        <input type="password" name="smtp_app_password" class="adm-input"
+                                            value="<?= htmlspecialchars($s['smtp_app_password'] ?? '') ?>"
+                                            placeholder="xxxx xxxx xxxx xxxx"
+                                            autocomplete="new-password">
+                                        <p class="adm-form-hint">
+                                            Bukan password Gmail biasa. Buat di
+                                            <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">
+                                                myaccount.google.com/apppasswords
+                                            </a>
+                                            (2FA harus aktif dulu).
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="adm-form-label">Nama Pengirim</label>
+                                        <input type="text" name="smtp_from_name" class="adm-input"
+                                            value="<?= htmlspecialchars($s['smtp_from_name'] ?? ($s['site_name'] ?? '')) ?>"
+                                            placeholder="Nama perusahaan">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="adm-form-label">Reply-To Email <small class="text-muted">(opsional)</small></label>
+                                        <input type="email" name="smtp_reply_to" class="adm-input"
+                                            value="<?= htmlspecialchars($s['smtp_reply_to'] ?? '') ?>"
+                                            placeholder="admin@domain.com">
+                                        <p class="adm-form-hint">Jika kosong, pakai Gmail di atas.</p>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="adm-form-label">Subject Default Balasan</label>
+                                        <input type="text" name="smtp_default_subject" class="adm-input"
+                                            value="<?= htmlspecialchars($s['smtp_default_subject'] ?? 'Re: Pesan dari website ' . ($s['site_name'] ?? '')) ?>">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-4 text-end">
@@ -263,14 +316,32 @@ $s = getAllSettings();
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const toggle = document.getElementById('topbarToggle');
+const toggle  = document.getElementById('topbarToggle');
 const sidebar = document.getElementById('pbsSidebar');
 const overlay = document.getElementById('sidebarOverlay');
 const close   = document.getElementById('sidebarClose');
-toggle?.addEventListener('click', () => { sidebar.classList.toggle('open'); overlay.classList.toggle('show'); });
+toggle?.addEventListener('click',  () => { sidebar.classList.toggle('open'); overlay.classList.toggle('show'); });
 overlay?.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('show'); });
-close?.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('show'); });
+close?.addEventListener('click',   () => { sidebar.classList.remove('open'); overlay.classList.remove('show'); });
+
+// --- Simpan & restore tab aktif via URL hash ---
+const tabLinks = document.querySelectorAll('#settingsTabs [data-bs-toggle="tab"]');
+
+// Restore tab dari hash saat halaman load
+const savedHash = location.hash || '#tab-general';
+const target = document.querySelector(
+  '#settingsTabs [data-bs-target="' + savedHash + '"]'
+);
+if (target) bootstrap.Tab.getOrCreateInstance(target).show();
+
+// Simpan hash ke URL saat tab di-klik
+tabLinks.forEach(btn => {
+  btn.addEventListener('shown.bs.tab', e => {
+    history.replaceState(null, '', e.target.dataset.bsTarget);
+  });
+});
 </script>
 </body>
 </html>

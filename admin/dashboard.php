@@ -155,7 +155,6 @@ try {
                                     ['href'=>'routes.php',       'icon'=>'bi-map-fill',        'label'=>'Rute Pelayaran',    'color'=>'green'],
                                     ['href'=>'news.php',         'icon'=>'bi-newspaper',       'label'=>'Kelola Berita',     'color'=>'yellow'],
                                     ['href'=>'testimonials.php', 'icon'=>'bi-chat-quote-fill', 'label'=>'Testimoni',         'color'=>'blue'],
-                                    ['href'=>'gallery.php',      'icon'=>'bi-images',          'label'=>'Galeri',            'color'=>'green'],
                                     ['href'=>'messages.php',     'icon'=>'bi-envelope-fill',   'label'=>'Pesan Masuk',       'color'=>'red'],
                                 ];
                                 foreach ($quick as $q): ?>

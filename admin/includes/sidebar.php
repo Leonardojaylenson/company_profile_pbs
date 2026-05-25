@@ -12,7 +12,6 @@ $menus = [
     ['file' => 'routes',       'icon' => 'bi-map-fill',        'label' => 'Rute Pelayaran'],
     ['file' => 'news',         'icon' => 'bi-newspaper',       'label' => 'Berita'],
     ['file' => 'testimonials', 'icon' => 'bi-chat-quote-fill', 'label' => 'Testimoni'],
-    ['file' => 'gallery',      'icon' => 'bi-images',          'label' => 'Galeri'],
     ['file' => 'messages',     'icon' => 'bi-envelope-fill',   'label' => 'Pesan Masuk'],
 ];
 if ($admin['role'] === 'superadmin') {
@@ -59,7 +58,7 @@ if ($admin['role'] === 'superadmin') {
 
     <!-- Bottom -->
     <div class="sidebar-bottom">
-        <a href="<?= BASE_URL ?>/" target="_blank" class="sidebar-nav-item">
+        <a href="<?= BASE_URL ?>/" class="sidebar-nav-item">
             <i class="bi bi-box-arrow-up-right"></i><span>Lihat Website</span>
         </a>
         <a href="<?= BASE_URL ?>/admin/logout.php" class="sidebar-nav-item text-danger-soft">
