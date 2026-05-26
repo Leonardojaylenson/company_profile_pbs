@@ -13,9 +13,13 @@ $menus = [
     ['file' => 'news',         'icon' => 'bi-newspaper',       'label' => 'Berita'],
     ['file' => 'testimonials', 'icon' => 'bi-chat-quote-fill', 'label' => 'Testimoni'],
     ['file' => 'messages',     'icon' => 'bi-envelope-fill',   'label' => 'Pesan Masuk'],
+
 ];
 if ($admin['role'] === 'superadmin') {
-    $menus[] = ['file' => 'admins', 'icon' => 'bi-people-fill', 'label' => 'Kelola Admin'];
+    $menus = [
+        ['file' => 'activity_log', 'icon' => 'bi-envelope-fill',   'label' => 'Log Aktifitas'],
+        ['file' => 'admins', 'icon' => 'bi-people-fill', 'label' => 'Kelola Admin'],
+    ];
 }
 ?>
 <div class="pbs-sidebar" id="pbsSidebar">

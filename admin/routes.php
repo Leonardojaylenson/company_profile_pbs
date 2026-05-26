@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $destination = sanitize($_POST['destination'] ?? '');
     $duration    = sanitize($_POST['duration'] ?? '');
     $frequency   = sanitize($_POST['frequency'] ?? '');
-    $vessel_type = sanitize($_POST['vessel_type'] ?? '');
     $notes       = sanitize($_POST['notes'] ?? '');
     $sort_order  = (int)($_POST['sort_order'] ?? 0);
     $is_active   = isset($_POST['is_active']) ? 1 : 0;
@@ -25,11 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($origin) || empty($destination)) { $error = 'Asal dan tujuan wajib diisi.'; }
     else {
         if ($id > 0) {
-            $pdo->prepare("UPDATE routes SET origin=?,destination=?,duration=?,frequency=?,vessel_type=?,notes=?,sort_order=?,is_active=? WHERE id=?")
-                ->execute([$origin,$destination,$duration,$frequency,$vessel_type,$notes,$sort_order,$is_active,$id]);
+            $pdo->prepare("UPDATE routes SET origin=?,destination=?,duration=?,frequency=?,notes=?,sort_order=?,is_active=? WHERE id=?")
+                ->execute([$origin,$destination,$duration,$frequency,$notes,$sort_order,$is_active,$id]);
         } else {
-            $pdo->prepare("INSERT INTO routes(origin,destination,duration,frequency,vessel_type,notes,sort_order,is_active) VALUES(?,?,?,?,?,?,?,?)")
-                ->execute([$origin,$destination,$duration,$frequency,$vessel_type,$notes,$sort_order,$is_active]);
+            $pdo->prepare("INSERT INTO routes(origin,destination,duration,frequency,notes,sort_order,is_active) VALUES(?,?,?,?,?,?,?,?)")
+                ->execute([$origin,$destination,$duration,$frequency,$notes,$sort_order,$is_active]);
         }
         logActivity($admin['id'], 'SAVE_ROUTE', "$origin → $destination");
         $success = 'Rute berhasil disimpan!';
@@ -85,7 +84,6 @@ $routes = $pdo->query("SELECT * FROM routes ORDER BY sort_order ASC, id ASC")->f
                         </td>
                         <td><?= htmlspecialchars($r['duration']) ?></td>
                         <td><?= htmlspecialchars($r['frequency']) ?></td>
-                        <td><?= htmlspecialchars($r['vessel_type'] ?? '-') ?></td>
                         <td><a href="?toggle=<?= $r['id'] ?>" class="adm-badge <?= $r['is_active'] ? 'green' : 'gray' ?>"><?= $r['is_active'] ? 'Aktif' : 'Nonaktif' ?></a></td>
                         <td>
                             <a href="#" class="btn-adm edit" onclick="openModal(<?= htmlspecialchars(json_encode($r)) ?>);return false;"><i class="bi bi-pencil"></i> Edit</a>
@@ -117,7 +115,6 @@ $routes = $pdo->query("SELECT * FROM routes ORDER BY sort_order ASC, id ASC")->f
             <div class="col-md-6"><label class="adm-form-label">Tujuan *</label><input type="text" name="destination" id="f_destination" class="adm-input" required placeholder="Jakarta"></div>
             <div class="col-md-6"><label class="adm-form-label">Durasi Perjalanan</label><input type="text" name="duration" id="f_duration" class="adm-input" placeholder="3-4 Hari"></div>
             <div class="col-md-6"><label class="adm-form-label">Frekuensi / Jadwal</label><input type="text" name="frequency" id="f_frequency" class="adm-input" placeholder="Setiap Senin &amp; Kamis"></div>
-            <div class="col-md-6"><label class="adm-form-label">Tipe Kapal</label><input type="text" name="vessel_type" id="f_vessel_type" class="adm-input" placeholder="Container Ship"></div>
             <div class="col-md-3"><label class="adm-form-label">Urutan</label><input type="number" name="sort_order" id="f_sort_order" class="adm-input" value="0"></div>
             <div class="col-md-3 d-flex align-items-end pb-1">
                 <div class="form-check"><input type="checkbox" name="is_active" id="f_is_active" class="form-check-input" checked><label class="form-check-label" for="f_is_active">Aktif</label></div>
@@ -151,14 +148,13 @@ function openModal(d=null) {
         document.getElementById('f_destination').value = d.destination||'';
         document.getElementById('f_duration').value = d.duration||'';
         document.getElementById('f_frequency').value = d.frequency||'';
-        document.getElementById('f_vessel_type').value = d.vessel_type||'';
         document.getElementById('f_sort_order').value = d.sort_order||0;
         document.getElementById('f_is_active').checked = d.is_active==1;
         document.getElementById('f_notes').value = d.notes||'';
     } else {
         document.getElementById('modalTitle').textContent = 'Tambah Rute';
         document.getElementById('f_id').value = '';
-        ['f_origin','f_destination','f_duration','f_frequency','f_vessel_type','f_notes'].forEach(id => document.getElementById(id).value='');
+        ['f_origin','f_destination','f_duration','f_frequency','f_notes'].forEach(id => document.getElementById(id).value='');
         document.getElementById('f_sort_order').value = 0;
         document.getElementById('f_is_active').checked = true;
     }
