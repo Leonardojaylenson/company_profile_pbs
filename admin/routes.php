@@ -69,7 +69,7 @@ $routes = $pdo->query("SELECT * FROM routes ORDER BY sort_order ASC, id ASC")->f
                 <?php else: ?>
                 <div class="table-responsive">
                 <table class="adm-table">
-                    <thead><tr><th>#</th><th>Rute</th><th>Durasi</th><th>Jadwal</th><th>Kapal</th><th>Status</th><th>Aksi</th></tr></thead>
+                    <thead><tr><th>#</th><th>Rute</th><th>Durasi</th><th>Jadwal</th><th>Status</th><th>Aksi</th></tr></thead>
                     <tbody>
                     <?php foreach ($routes as $i => $r): ?>
                     <tr>

@@ -37,9 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id          = (int)($_POST['id'] ?? 0);
     $title       = sanitize($_POST['title'] ?? '');
     $short_desc  = sanitize($_POST['short_desc'] ?? '');
-    $description = sanitize($_POST['description'] ?? '');
+    $full_desc = sanitize($_POST['full_desc'] ?? '');
     $icon        = sanitize($_POST['icon'] ?? 'bi-box-seam');
-    $price_info  = sanitize($_POST['price_info'] ?? '');
     $sort_order  = (int)($_POST['sort_order'] ?? 0);
     $is_active   = isset($_POST['is_active']) ? 1 : 0;
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
@@ -59,12 +58,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Judul layanan wajib diisi.';
     } else {
         if ($id > 0) {
-            $pdo->prepare("UPDATE services SET title=?,short_desc=?,description=?,icon=?,price_info=?,image=?,features=?,sort_order=?,is_active=?,is_featured=? WHERE id=?")
-                ->execute([$title,$short_desc,$description,$icon,$price_info,$image,$features_json,$sort_order,$is_active,$is_featured,$id]);
+            $pdo->prepare("UPDATE services SET title=?,short_desc=?,full_desc=?,icon=?,image=?,features=?,sort_order=?,is_active=?,is_featured=? WHERE id=?")
+                ->execute([$title,$short_desc,$full_desc,$icon,$image,$features_json,$sort_order,$is_active,$is_featured,$id]);
             logActivity($admin['id'], 'UPDATE_SERVICE', $title);
         } else {
-            $pdo->prepare("INSERT INTO services(title,short_desc,description,icon,price_info,image,features,sort_order,is_active,is_featured) VALUES(?,?,?,?,?,?,?,?,?,?)")
-                ->execute([$title,$short_desc,$description,$icon,$price_info,$image,$features_json,$sort_order,$is_active,$is_featured]);
+            $pdo->prepare("INSERT INTO services(title,short_desc,full_desc,icon,image,features,sort_order,is_active,is_featured) VALUES(?,?,?,?,?,?,?,?,?,?)")
+                ->execute([$title,$short_desc,$full_desc,$icon,$image,$features_json,$sort_order,$is_active,$is_featured]);
             logActivity($admin['id'], 'ADD_SERVICE', $title);
         }
         $success = 'Layanan berhasil disimpan!';
@@ -165,11 +164,7 @@ $msg = $_GET['msg'] ?? '';
             </div>
             <div class="col-12">
                 <label class="adm-form-label">Deskripsi Lengkap</label>
-                <textarea name="description" id="f_description" class="adm-input" rows="4"></textarea>
-            </div>
-            <div class="col-md-6">
-                <label class="adm-form-label">Info Harga (opsional)</label>
-                <input type="text" name="price_info" id="f_price_info" class="adm-input" placeholder="Hubungi kami untuk penawaran">
+                <textarea name="full_desc" id="f_desc" class="adm-input" rows="4"></textarea>
             </div>
             <div class="col-md-3">
                 <label class="adm-form-label">Urutan</label>
@@ -219,8 +214,7 @@ function openModal(data = null) {
         document.getElementById('f_title').value = data.title || '';
         document.getElementById('f_icon').value = data.icon || 'bi-box-seam';
         document.getElementById('f_short_desc').value = data.short_desc || '';
-        document.getElementById('f_description').value = data.description || '';
-        document.getElementById('f_price_info').value = data.price_info || '';
+        document.getElementById('f_desc').value = data.full_desc || '';
         document.getElementById('f_sort_order').value = data.sort_order || 0;
         document.getElementById('f_is_active').checked = data.is_active == 1;
         document.getElementById('f_is_featured').checked = data.is_featured == 1;

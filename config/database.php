@@ -13,12 +13,12 @@ define('UPLOAD_URL',  BASE_URL  . '/public/uploads/');
 
 // Session
 define('SESSION_NAME', 'pbs_admin_session');
-define('SESSION_LIFETIME', 3600); // 1 jam
+define('SESSION_LIFETIME', 3600); 
 
 // App info
 define('APP_NAME',    'PBS Admin Panel');
 define('APP_VERSION', '1.0.0');
-
+date_default_timezone_set('Asia/Jakarta');
 function getPDO(): PDO {
     static $pdo = null;
     if ($pdo === null) {

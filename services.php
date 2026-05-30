@@ -37,35 +37,26 @@ $pageTitle = 'Layanan Kami';
         <div class="row g-4">
             <?php foreach ($services as $i => $svc): ?>
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?= ($i % 3) * 80 ?>" id="service-<?= $svc['id'] ?>">
-                <div class="service-card h-100">
-                    <div class="service-card-icon">
-                        <i class="bi <?= htmlspecialchars($svc['icon'] ?? 'bi-box-seam') ?>"></i>
-                    </div>
+                <div class="service-card">
                     <?php if (!empty($svc['image'])): ?>
-                    <div class="service-card-img">
+                    <div class="service-card-imgwrap">
                         <img src="<?= uploadUrl($svc['image']) ?>" alt="<?= htmlspecialchars($svc['title']) ?>">
                     </div>
                     <?php endif; ?>
                     <div class="service-card-body">
                         <h3 class="service-card-title"><?= htmlspecialchars($svc['title']) ?></h3>
-                        <p class="service-card-desc"><?= nl2br(htmlspecialchars($svc['description'] ?? $svc['short_desc'] ?? '')) ?></p>
+                        <p class="service-card-desc"><?= htmlspecialchars(truncate($svc['short_desc'] ?? '', 120)) ?></p>
                         <?php if (!empty($svc['features'])):
                             $features = json_decode($svc['features'], true) ?? [];
                         ?>
-                        <ul class="service-features-mini mt-3">
+                        <ul class="service-features-mini">
                             <?php foreach ($features as $f): ?>
                             <li><i class="bi bi-check-circle-fill"></i> <?= htmlspecialchars($f) ?></li>
                             <?php endforeach; ?>
                         </ul>
                         <?php endif; ?>
-                        <?php if (!empty($svc['price_info'])): ?>
-                        <div class="service-price mt-3">
-                            <small class="text-muted">Mulai dari</small>
-                            <strong class="d-block text-primary"><?= htmlspecialchars($svc['price_info']) ?></strong>
-                        </div>
-                        <?php endif; ?>
-                        <a href="<?= BASE_URL ?>/contact.php?service=<?= urlencode($svc['title']) ?>" class="btn btn-primary w-100 mt-3">
-                            <i class="bi bi-headset me-2"></i> Konsultasi Layanan Ini
+                        <a href="<?= BASE_URL ?>/contact.php?service=<?= urlencode($svc['title']) ?>" class="service-card-link mt-auto">
+                            <i class="bi bi-headset me-1"></i> Konsultasi Layanan Ini
                         </a>
                     </div>
                 </div>

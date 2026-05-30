@@ -95,7 +95,6 @@ $pageTitle = '';
     </a>
 </section>
 
-<!-- ══ SERVICES SECTION ══════════════════════════════════════ -->
 <section class="services-section" id="services">
     <div class="container">
         <div class="row justify-content-center text-center mb-5">
@@ -109,30 +108,23 @@ $pageTitle = '';
             <?php foreach ($services as $i => $svc): ?>
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?= $i * 80 ?>">
                 <div class="service-card">
-                    <div class="service-card-icon">
-                        <i class="bi <?= htmlspecialchars($svc['icon']) ?>"></i>
-                    </div>
                     <?php if (!empty($svc['image'])): ?>
-                    <div class="service-card-img">
+                    <div class="service-card-imgwrap">
                         <img src="<?= uploadUrl($svc['image']) ?>" alt="<?= htmlspecialchars($svc['title']) ?>">
                     </div>
                     <?php endif; ?>
                     <div class="service-card-body">
                         <h3 class="service-card-title"><?= htmlspecialchars($svc['title']) ?></h3>
                         <p class="service-card-desc"><?= htmlspecialchars(truncate($svc['short_desc'], 120)) ?></p>
-                        <?php if (!empty($svc['features'])): 
+                        <?php if (!empty($svc['features'])):
                             $features = json_decode($svc['features'], true) ?? [];
-                            $shown = array_slice($features, 0, 3);
                         ?>
                         <ul class="service-features-mini">
-                            <?php foreach ($shown as $f): ?>
+                            <?php foreach ($features as $f): ?>
                             <li><i class="bi bi-check-circle-fill"></i> <?= htmlspecialchars($f) ?></li>
                             <?php endforeach; ?>
                         </ul>
                         <?php endif; ?>
-                        <a href="<?= BASE_URL ?>/services.php#service-<?= $svc['id'] ?>" class="service-card-link">
-                            Selengkapnya <i class="bi bi-arrow-right"></i>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -204,7 +196,7 @@ $pageTitle = '';
 <!-- ══ ROUTES SECTION ═══════════════════════════════════════ -->
 <?php if (!empty($routes)): ?>
 <section class="routes-section">
-    <div class="container">
+    <div class="container mb-5">
         <div class="row justify-content-center text-center mb-5">
             <div class="col-lg-7" data-aos="fade-up">
                 <span class="section-label">Jaringan Rute</span>
@@ -218,7 +210,7 @@ $pageTitle = '';
                 <div class="route-card p-4 shadow-sm border-0 rounded-4 bg-white">
                     <div class="d-flex align-items-center mb-3">
                         <div class="route-icon-circle bg-primary-subtle text-primary me-3">
-                            <i class="bi bi-ship"></i>
+                            <i class="bi bi-water"></i>
                         </div>
                         <h5 class="mb-0 fw-bold">Jalur Pelayaran</h5>
                     </div>
@@ -227,10 +219,15 @@ $pageTitle = '';
                         <i class="bi bi-arrow-right text-primary mx-2"></i>
                         <span class="fw-bold text-dark"><?= htmlspecialchars($route['destination']) ?></span>
                     </div>
-                    <div class="route-details d-flex gap-3 text-muted small">
+                    <div class="route-details d-flex gap-3 text-muted small mb-3">
                         <span><i class="bi bi-clock-history me-1"></i> <?= htmlspecialchars($route['duration']) ?></span>
                         <span><i class="bi bi-calendar-event me-1"></i> <?= htmlspecialchars($route['frequency']) ?></span>
                     </div>
+                    <?php if (!empty($route['notes'])): ?>
+                    <div class="route-notes">
+                        <i class="bi bi-info-circle me-1"></i> <?= htmlspecialchars($route['notes']) ?>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -239,45 +236,6 @@ $pageTitle = '';
 </section>
 <?php endif; ?>
 
-<!-- ══ STATS COUNTER SECTION ═════════════════════════════════ -->
-<section class="stats-section">
-    <div class="container">
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-3 col-6" data-aos="zoom-in" data-aos-delay="0">
-                <div class="stat-counter-card">
-                    <i class="bi bi-calendar-check stat-icon"></i>
-                    <div class="stat-number" data-count="<?= preg_replace('/\D/', '', $s['stat_years'] ?? '10') ?>">0</div>
-                    <div class="stat-suffix"><?= preg_match('/[A-Za-z+]+/', $s['stat_years'] ?? '10+', $m) ? $m[0] : '+' ?></div>
-                    <div class="stat-label">Tahun Pengalaman</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" data-aos="zoom-in" data-aos-delay="100">
-                <div class="stat-counter-card">
-                    <i class="bi bi-geo-alt stat-icon"></i>
-                    <div class="stat-number" data-count="<?= preg_replace('/\D/', '', $s['stat_routes'] ?? '50') ?>">0</div>
-                    <div class="stat-suffix"><?= preg_match('/[A-Za-z+]+/', $s['stat_routes'] ?? '50+', $m) ? $m[0] : '+' ?></div>
-                    <div class="stat-label">Rute Pelayaran</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" data-aos="zoom-in" data-aos-delay="200">
-                <div class="stat-counter-card">
-                    <i class="bi bi-box-seam stat-icon"></i>
-                    <div class="stat-number" data-count="<?= preg_replace('/\D/', '', str_replace('.', '', $s['stat_containers'] ?? '5000')) ?>">0</div>
-                    <div class="stat-suffix">+</div>
-                    <div class="stat-label">Kontainer/Tahun</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" data-aos="zoom-in" data-aos-delay="300">
-                <div class="stat-counter-card">
-                    <i class="bi bi-people stat-icon"></i>
-                    <div class="stat-number" data-count="<?= preg_replace('/\D/', '', $s['stat_clients'] ?? '200') ?>">0</div>
-                    <div class="stat-suffix">+</div>
-                    <div class="stat-label">Pelanggan Setia</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- ══ TESTIMONIALS ══════════════════════════════════════════ -->
 <?php if (!empty($testi)): ?>
@@ -339,19 +297,25 @@ $pageTitle = '';
             <?php foreach ($news as $i => $n): ?>
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?= $i * 80 ?>">
                 <article class="news-card">
-                    <div class="news-card-img">
+                    <div class="news-card-imgwrap">
                         <?php if (!empty($n['image'])): ?>
                             <img src="<?= uploadUrl($n['image']) ?>" alt="<?= htmlspecialchars($n['title']) ?>">
                         <?php else: ?>
                             <div class="news-img-placeholder"><i class="bi bi-newspaper"></i></div>
                         <?php endif; ?>
-                        <span class="news-category"><?= htmlspecialchars($n['category'] ?? 'Berita') ?></span>
                     </div>
                     <div class="news-card-body">
-                        <div class="news-meta"><i class="bi bi-calendar3"></i> <?= formatDate($n['published_at']) ?></div>
-                        <h3 class="news-title"><a href="<?= BASE_URL ?>/news.php?id=<?= $n['id'] ?>"><?= htmlspecialchars($n['title']) ?></a></h3>
+                        <div class="news-meta">
+                            <span class="news-category"><?= htmlspecialchars($n['category'] ?? 'Berita') ?></span>
+                            <span><i class="bi bi-calendar3 me-1"></i><?= formatDate($n['published_at']) ?></span>
+                        </div>
+                        <h3 class="news-title">
+                            <a href="<?= BASE_URL ?>/news.php?id=<?= $n['id'] ?>"><?= htmlspecialchars($n['title']) ?></a>
+                        </h3>
                         <p class="news-excerpt"><?= htmlspecialchars(truncate($n['excerpt'] ?? '', 110)) ?></p>
-                        <a href="<?= BASE_URL ?>/news.php?id=<?= $n['id'] ?>" class="news-read-more">Baca Selengkapnya <i class="bi bi-arrow-right"></i></a>
+                        <a href="<?= BASE_URL ?>/news.php?id=<?= $n['id'] ?>" class="news-read-more">
+                            Baca Selengkapnya <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
                 </article>
             </div>

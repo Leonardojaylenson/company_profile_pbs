@@ -47,7 +47,7 @@ if ($id > 0) {
 
 <?php if ($news): ?>
 <!-- ── DETAIL VIEW ── -->
-<section class="section-pad">
+<section class="section-pad mb-5">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
@@ -89,17 +89,19 @@ if ($id > 0) {
         <div class="row g-4">
             <?php foreach ($allNews as $i => $n): ?>
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?= ($i % 3) * 60 ?>">
-                <article class="news-card h-100">
-                    <div class="news-card-img">
+                <article class="news-card">
+                    <div class="news-card-imgwrap">
                         <?php if (!empty($n['image'])): ?>
                             <img src="<?= uploadUrl($n['image']) ?>" alt="<?= htmlspecialchars($n['title']) ?>">
                         <?php else: ?>
                             <div class="news-img-placeholder"><i class="bi bi-newspaper"></i></div>
                         <?php endif; ?>
-                        <span class="news-category"><?= htmlspecialchars($n['category'] ?? 'Berita') ?></span>
                     </div>
                     <div class="news-card-body">
-                        <div class="news-meta"><i class="bi bi-calendar3"></i> <?= formatDate($n['published_at']) ?></div>
+                        <div class="news-meta">
+                            <span class="news-category"><?= htmlspecialchars($n['category'] ?? 'Berita') ?></span>
+                            <span><i class="bi bi-calendar3 me-1"></i><?= formatDate($n['published_at']) ?></span>
+                        </div>
                         <h3 class="news-title">
                             <a href="<?= BASE_URL ?>/news.php?id=<?= $n['id'] ?>"><?= htmlspecialchars($n['title']) ?></a>
                         </h3>
