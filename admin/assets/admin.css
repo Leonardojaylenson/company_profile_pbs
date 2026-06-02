@@ -913,17 +913,33 @@ select.adm-input {
 }
 
 .action-btns {
-    display: flex;
-    gap: 6px;           
-    align-items: center;
+    display: block;
+    white-space: nowrap; 
+}
+
+.action-btns .btn-adm {
+    display: inline-flex;
+    margin-right: 4px;   
+}
+
+.action-btns .btn-adm:last-child {
+    margin-right: 0;    
+}
+
+.desc-cell {
+    display: block;
+    max-width: 220px;        
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
 }
 
 .mc-actions {
     display: flex;
-    gap: 8px;           
+    gap: 8px;
     align-items: center;
     width: 100%;
-    margin-top: 10px;    
+    margin-top: 10px;
 }
 
 /* ── RESPONSIVE & MOBILE QUERY ───────────────────────────────── */
