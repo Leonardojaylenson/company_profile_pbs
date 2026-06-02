@@ -134,6 +134,19 @@ $smtpConfigured = !empty($s['smtp_gmail']) && !empty($s['smtp_app_password']);
         .bulk-bar  { display:none;align-items:center;gap:10px;padding:10px 16px;background:#fff3cd;border-radius:10px;margin-bottom:12px; }
         .bulk-bar.show { display:flex; }
         .smtp-warning { background:#fff3cd;border:1.5px solid #fbbf24;border-radius:10px;padding:10px 16px;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:8px; }
+
+        .adm-main {
+            min-width: 0 !important;        
+            overflow-x: hidden !important;  
+        }
+        .table-responsive {
+            width: 100% !important;
+            overflow-x: auto !important;   
+            display: block;
+        }
+        .adm-table {
+            width: 100% !important;
+        }
     </style>
 </head>
 <body>

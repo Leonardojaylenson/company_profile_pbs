@@ -151,6 +151,28 @@ h1, h2, h3, h4, h5, h6 {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='%23C8202D' stroke-width='2.5' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
+.navbar-nav .nav-item .btn {
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.navbar-nav .nav-item .btn:hover,
+.navbar-nav .nav-item .btn:focus {
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12) !important;
+}
+
+.navbar-nav .nav-item .btn:hover i {
+    display: inline-block;
+    animation: pbsBounceIcon 0.6s ease infinite alternate;
+}
+
+@keyframes pbsBounceIcon {
+    from { transform: translateY(0); }
+    to { transform: translateY(-3px); }
+}
+
 /* ── HERO SECTION ──────────────────────────────────────────── */
 .hero-section {
     position: relative;
@@ -1093,53 +1115,81 @@ h1, h2, h3, h4, h5, h6 {
 .alert-success { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
 .alert-danger   { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
 
-/* ── RESPONSIVE ────────────────────────────────────────────── */
 @media (max-width: 991.98px) {
+    
     .navbar-collapse {
-        background: #fff;
-        border-radius: 0 0 var(--pbs-radius) var(--pbs-radius);
-        box-shadow: var(--pbs-shadow);
-        padding: 1rem;
-        margin-top: 0.5rem;
+        padding-top: 1rem;
+        padding-bottom: 1.5rem;
     }
-    .about-badge { right: 0; }
-    .about-image-wrap { margin-bottom: 3rem; }
+
+    .navbar-nav .nav-item {
+        margin-bottom: 0.6rem !important;
+    }
+    .navbar-nav .nav-item:last-child {
+        margin-bottom: 0 !important;
+    }
+
+    .navbar-nav .nav-item .btn {
+        width: 100% !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        height: 44px !important; 
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        border-radius: 50px !important; 
+    }
+
+    .navbar-collapse.show .navbar-nav .nav-item:nth-last-child(2) .btn {
+        animation: pbsMenuFadeInUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        animation-delay: 0.12s;
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    .navbar-collapse.show .navbar-nav .nav-item:last-child .btn {
+        animation: pbsMenuFadeInUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        animation-delay: 0.22s;
+        opacity: 0;
+        transform: translateY(15px);
+    }
 }
 
 @media (max-width: 767.98px) {
-    .hero-stats { gap: 1rem; }
-    .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .stat-item:last-child { border-bottom: none; }
-    .wa-float { bottom: 5.5rem; }
-        .about-image-wrap {
-        margin-bottom: 1rem; 
+    
+  
+    html, body {
+        position: relative;
+        overflow-x: hidden !important;
     }
-
+    
     .about-badge {
-        position: static;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-top: 1rem;
-        padding: 0.75rem 1.25rem;
-        border-radius: var(--pbs-radius);
+        right: 1rem !important;    
+        bottom: 1rem !important;  
+        padding: 0.8rem 1.2rem !important; 
     }
-
+    
     .about-badge-num {
-        font-size: 1.5rem;
+        font-size: 1.5rem !important; 
     }
 
-    .about-badge-label {
-        font-size: 0.8rem;
+    .about-image-wrap img {
+        height: 320px !important;
     }
-
-    .about-image-wrap img,
-    .about-image-wrap .about-placeholder {
-        height: 260px;
+    
+    .stat-item {
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+        padding-bottom: 1rem !important;
     }
-
-    .about-image-wrap {
-        margin-bottom: 1rem;
+    
+    .stat-item:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
+    
+    .about-section, .services-section, .whyus-section, .news-section, .testimonials-section {
+        padding: 3.5rem 0 !important;
     }
 }
 
@@ -1147,6 +1197,13 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pbsMenuFadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .animate-fadeInUp { animation: fadeInUp 0.6s ease both; }

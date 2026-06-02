@@ -56,20 +56,23 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                 <li class="nav-item me-lg-4"><a class="nav-link <?= $currentPage==='services'?'active':'' ?>" href="<?= BASE_URL ?>/services.php">Layanan</a></li>
                 <li class="nav-item me-lg-4"><a class="nav-link <?= $currentPage==='news'?'active':'' ?>" href="<?= BASE_URL ?>/news.php">Berita</a></li>
                 <li class="nav-item me-lg-4"><a class="nav-link <?= $currentPage==='contact'?'active':'' ?>" href="<?= BASE_URL ?>/contact.php">Kontak</a></li>
-                <li class="nav-item ms-lg-2">
-                    <a class="btn btn-primary btn-sm px-4 rounded-pill" href="<?= 'https://wa.me/' . preg_replace('/[^0-9]/', '', $s['contact_whatsapp'] ?? '') ?>">
-                        <i class="bi bi-whatsapp me-1"></i> WhatsApp
+                <li class="nav-item">
+                    <?php if (!empty($s['contact_whatsapp'])): $waClean = preg_replace('/[^0-9]/', '', $s['contact_whatsapp']); ?>
+                    <a class="btn btn-outline-success btn-sm px-3 rounded-pill d-inline-flex align-items-center justify-content-center me-2" href="https://wa.me/<?= $waClean ?>" target="_blank" style="height: 38px; min-width: 125px;">
+                        <i class="bi bi-whatsapp me-2"></i> WhatsApp
                     </a>
+                    <?php endif; ?>
                 </li>
+
                 <li class="nav-item ms-lg-2">
                     <?php if (isAdminLoggedIn()): ?>
-                        <a class="btn btn-outline-primary btn-sm px-4 rounded-pill d-inline-flex align-items-center" href="<?= BASE_URL ?>/admin/dashboard.php" style="height: 38px;">
-                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
-                        </a>
+                    <a class="btn btn-outline-primary btn-sm px-3 rounded-pill d-inline-flex align-items-center justify-content-center" href="<?= BASE_URL ?>/admin/dashboard.php" style="height: 38px; min-width: 125px;">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
                     <?php else: ?>
-                    <a class="btn btn-outline-dark btn-sm px-4 rounded-pill d-inline-flex align-items-center" href="<?= BASE_URL ?>/admin/login.php" style="height: 38px;">
-                         <i class="bi bi-person-lock me-2"></i> Admin
-                     </a>
+                    <a class="btn btn-outline-dark btn-sm px-3 rounded-pill d-inline-flex align-items-center justify-content-center" href="<?= BASE_URL ?>/admin/login.php" style="height: 38px; min-width: 125px;">
+                        <i class="bi bi-person-lock me-2"></i> Admin
+                    </a>
                     <?php endif; ?>
                 </li>
             </ul>

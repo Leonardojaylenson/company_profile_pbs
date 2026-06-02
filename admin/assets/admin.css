@@ -964,3 +964,23 @@ select.adm-input {
         padding: 16px;
     }
 }
+
+@media (max-width: 767.98px) {
+    
+    .adm-sidebar, .sidebar { 
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        
+        height: 100dvh !important; 
+        bottom: 0 !important;
+        
+        overflow-y: auto !important; 
+        
+        width: var(--sidebar-w, 260px) !important; 
+        
+        z-index: 9999 !important; 
+        
+        border-radius: 0 !important; 
+    }
+}
