@@ -245,103 +245,55 @@ $smtpConfigured = !empty($s['smtp_gmail']) && !empty($s['smtp_app_password']);
                                 <tbody>
                                 <?php foreach ($messages as $msg): ?>
                                     <tr class="<?= !$msg['is_read'] ? 'msg-unread' : '' ?>" id="row-<?= (int)$msg['id'] ?>">
-                                        <td>
-                                            <input type="checkbox" name="selected[]"
-                                                   value="<?= (int)$msg['id'] ?>"
-                                                   class="row-check" onchange="updateBulk()">
-                                        </td>
-                                        <td>
+                                        <td><input type="checkbox" name="selected[]" value="<?= (int)$msg['id'] ?>" class="row-check" onchange="updateBulk()"></td>
+                                        <td class="nowrap">
                                             <div class="d-flex align-items-center gap-2">
-                                                <?php if (!$msg['is_read']): ?>
-                                                    <span class="msg-dot"></span>
-                                                <?php endif; ?>
+                                                <?php if (!$msg['is_read']): ?><span class="msg-dot"></span><?php endif; ?>
                                                 <div>
                                                     <strong><?= htmlspecialchars($msg['name']) ?></strong>
                                                     <div class="text-muted small"><?= htmlspecialchars($msg['email']) ?></div>
-                                                    <?php if (!empty($msg['phone'])): ?>
-                                                        <div class="text-muted small">
-                                                            <i class="bi bi-telephone me-1"></i><?= htmlspecialchars($msg['phone']) ?>
-                                                        </div>
-                                                    <?php endif; ?>
+                                                    <?php if (!empty($msg['phone'])): ?><div class="text-muted small"><i class="bi bi-telephone me-1"></i><?= htmlspecialchars($msg['phone']) ?></div><?php endif; ?>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td style="max-width:300px;">
-                                            <?php if (!empty($msg['subject'])): ?>
-                                                <div class="fw-semibold small mb-1"><?= htmlspecialchars($msg['subject']) ?></div>
-                                            <?php endif; ?>
-                                            <div class="text-muted small">
-                                                <?= htmlspecialchars(mb_substr($msg['message'], 0, 80)) ?><?= mb_strlen($msg['message']) > 80 ? '…' : '' ?>
-                                            </div>
+                                        <td style="min-width: 250px; max-width:300px;">
+                                            <?php if (!empty($msg['subject'])): ?><div class="fw-semibold small mb-1"><?= htmlspecialchars($msg['subject']) ?></div><?php endif; ?>
+                                            <div class="text-muted small"><?= htmlspecialchars(mb_substr($msg['message'], 0, 80)) ?><?= mb_strlen($msg['message']) > 80 ? '…' : '' ?></div>
                                         </td>
-                                        <td>
+                                        <td class="nowrap">
                                             <?php $cargo = $msg['cargo_type_name'] ?? $msg['cargo_type'] ?? '-'; ?>
                                             <span class="adm-badge blue"><?= htmlspecialchars($cargo) ?></span>
                                         </td>
-                                        <td class="text-muted small" style="white-space:nowrap;">
-                                            <?= date('d/m/Y', strtotime($msg['created_at'])) ?><br>
-                                            <span><?= date('H:i', strtotime($msg['created_at'])) ?></span>
+                                        <td class="text-muted small nowrap">
+                                            <?= date('d/m/Y', strtotime($msg['created_at'])) ?><br><span><?= date('H:i', strtotime($msg['created_at'])) ?></span>
                                         </td>
-                                        <td>
+                                        <td class="nowrap">
                                             <div class="d-flex flex-column gap-1">
-                                                <a href="?read=<?= (int)$msg['id'] ?>&filter=<?= urlencode($filter) ?>"
-                                                   class="adm-badge <?= $msg['is_read'] ? 'green' : 'gray' ?>"
-                                                   style="white-space:nowrap;">
-                                                    <?= $msg['is_read']
-                                                        ? '<i class="bi bi-eye"></i> Dibaca'
-                                                        : '<i class="bi bi-eye-slash"></i> Baru' ?>
+                                                <a href="?read=<?= (int)$msg['id'] ?>&filter=<?= urlencode($filter) ?>" class="adm-badge <?= $msg['is_read'] ? 'green' : 'gray' ?>">
+                                                    <?= $msg['is_read'] ? '<i class="bi bi-eye"></i> Dibaca' : '<i class="bi bi-eye-slash"></i> Baru' ?>
                                                 </a>
-                                                <a href="?replied=<?= (int)$msg['id'] ?>&filter=<?= urlencode($filter) ?>"
-                                                   class="adm-badge <?= $msg['is_replied'] ? 'green' : 'gray' ?>"
-                                                   style="white-space:nowrap;">
-                                                    <?= $msg['is_replied']
-                                                        ? '<i class="bi bi-reply"></i> Dibalas'
-                                                        : '<i class="bi bi-reply"></i> Pending' ?>
+                                                <a href="?replied=<?= (int)$msg['id'] ?>&filter=<?= urlencode($filter) ?>" class="adm-badge <?= $msg['is_replied'] ? 'green' : 'gray' ?>">
+                                                    <?= $msg['is_replied'] ? '<i class="bi bi-reply"></i> Dibalas' : '<i class="bi bi-reply"></i> Pending' ?>
                                                 </a>
                                             </div>
                                         </td>
-                                        <td style="white-space:nowrap;">
-                                            <!-- Detail -->
-                                            <a href="#"
-                                               class="btn-adm edit"
-                                               onclick="openDetail(<?= htmlspecialchars(json_encode($msg), ENT_QUOTES) ?>);return false;"
-                                               title="Lihat Detail">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-
-                                            <!-- Balas via Email (SMTP) -->
-                                            <?php if (!empty($msg['email'])): ?>
-                                                <a href="#"
-                                                   class="btn-adm secondary ms-1 <?= !$smtpConfigured ? 'disabled' : '' ?>"
-                                                   onclick="openReply(<?= htmlspecialchars(json_encode($msg), ENT_QUOTES) ?>);return false;"
-                                                   title="<?= $smtpConfigured ? 'Balas via Email' : 'SMTP belum dikonfigurasi' ?>">
-                                                    <i class="bi bi-reply"></i>
-                                                </a>
-                                            <?php endif; ?>
-
-                                            <!-- Balas via WhatsApp -->
-                                            <?php if (!empty($msg['phone'])): ?>
-                                                <?php
-                                                    $wa = preg_replace('/[^0-9]/', '', $msg['phone']);
-                                                    if ($wa && $wa[0] === '0') $wa = '62' . substr($wa, 1);
-                                                    $waText = 'Halo ' . rawurlencode($msg['name']) . ', kami merespons pesan Anda tentang ' . rawurlencode($msg['subject'] ?? 'layanan kami') . '.';
-                                                ?>
-                                                <a href="https://wa.me/<?= htmlspecialchars($wa) ?>?text=<?= $waText ?>"
-                                                   target="_blank" rel="noopener"
-                                                   class="btn-adm secondary ms-1"
-                                                   title="Balas via WhatsApp"
-                                                   onclick="markReplied(<?= (int)$msg['id'] ?>)">
-                                                    <i class="bi bi-whatsapp"></i>
-                                                </a>
-                                            <?php endif; ?>
-
-                                            <!-- Hapus -->
-                                            <a href="?delete=<?= (int)$msg['id'] ?>&filter=<?= urlencode($filter) ?>"
-                                               class="btn-adm del ms-1"
-                                               onclick="return confirm('Hapus pesan ini?')"
-                                               title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
+                                        
+                                        <td class="nowrap">
+                                            <div class="action-btns">
+                                                <a href="#" class="btn-adm edit" onclick="openDetail(<?= htmlspecialchars(json_encode($msg), ENT_QUOTES) ?>);return false;" title="Lihat Detail"><i class="bi bi-eye"></i></a>
+                                                <?php if (!empty($msg['email'])): ?>
+                                                    <a href="#" class="btn-adm secondary <?= !$smtpConfigured ? 'disabled' : '' ?>" onclick="openReply(<?= htmlspecialchars(json_encode($msg), ENT_QUOTES) ?>);return false;" title="<?= $smtpConfigured ? 'Balas via Email' : 'SMTP belum dikonfigurasi' ?>"><i class="bi bi-reply"></i></a>
+                                                <?php endif; ?>
+                                                <?php if (!empty($msg['phone'])): ?>
+                                                    <?php 
+                                                        $wa = preg_replace('/[^0-9]/', '', $msg['phone']); 
+                                                        if ($wa && $wa[0] === '0') $wa = '62' . substr($wa, 1);
+                                                        $waText = 'Halo ' . rawurlencode($msg['name']) . ', kami merespons pesan Anda tentang ' . rawurlencode($msg['subject'] ?? 'layanan kami') . '.';
+                                                    ?>
+                                                    <a href="https://wa.me/<?= htmlspecialchars($wa) ?>?text=<?= $waText ?>" target="_blank" rel="noopener" class="btn-adm secondary" title="Balas via WhatsApp" onclick="markReplied(<?= (int)$msg['id'] ?>)"><i class="bi bi-whatsapp"></i></a>
+                                                <?php endif; ?>
+                                                <a href="?delete=<?= (int)$msg['id'] ?>&filter=<?= urlencode($filter) ?>" class="btn-adm del" onclick="return confirm('Hapus pesan ini?')" title="Hapus"><i class="bi bi-trash"></i></a>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

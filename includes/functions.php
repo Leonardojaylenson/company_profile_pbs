@@ -190,9 +190,30 @@ function jsonResponse(array $data, int $code = 200): void {
     exit;
 }
 
-function logActivity(int $adminId, string $action, string $desc = ''): void {
-    $pdo  = getPDO();
-    $ip   = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-    $stmt = $pdo->prepare("INSERT INTO activity_log (admin_id, action, description, ip_address) VALUES (?, ?, ?, ?)");
-    $stmt->execute([$adminId, $action, $desc, $ip]);
+function logActivity(int $adminId, string $action, string $desc = '', array $detail = []): void
+{
+    $pdo = getPDO();
+    $ip  = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+ 
+    if (!empty($detail)) {
+        $lines = [];
+        foreach ($detail as $field => $change) {
+            if (is_array($change) && array_key_exists('old', $change) && array_key_exists('new', $change)) {
+                $old = mb_strimwidth((string)$change['old'], 0, 80, '…');
+                $new = mb_strimwidth((string)$change['new'], 0, 80, '…');
+                if ($old !== $new) {
+                    $lines[] = "[$field] \"$old\" → \"$new\"";
+                }
+            } else {
+                // Bisa juga dipakai untuk info tambahan tanpa old/new
+                $lines[] = "[$field] " . mb_strimwidth((string)$change, 0, 120, '…');
+            }
+        }
+        if ($lines) {
+            $desc = ($desc ? $desc . "\n" : '') . implode("\n", $lines);
+        }
+    }
+ 
+    $pdo->prepare("INSERT INTO activity_log (admin_id, action, description, ip_address) VALUES (?, ?, ?, ?)")
+        ->execute([$adminId, $action, $desc, $ip]);
 }

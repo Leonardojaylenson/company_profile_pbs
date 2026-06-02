@@ -111,25 +111,28 @@ $msg = $_GET['msg'] ?? '';
                 <div class="empty-state"><i class="bi bi-grid"></i><p>Belum ada layanan. Klik "+ Tambah Layanan".</p></div>
                 <?php else: ?>
                 <div class="table-responsive">
-                <table class="adm-table">
-                    <thead><tr><th>Gambar</th><th>Judul</th><th>Deskripsi</th><th>Sort</th><th>Status</th><th>Featured</th><th>Aksi</th></tr></thead>
-                    <tbody>
-                    <?php foreach ($services as $svc): ?>
-                    <tr>
-                        <td><?php if (!empty($svc['image'])): ?><img src="<?= uploadUrl($svc['image']) ?>" class="thumb"><?php else: ?><div style="width:48px;height:36px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="bi <?= htmlspecialchars($svc['icon']) ?>"></i></div><?php endif; ?></td>
-                        <td><strong><?= htmlspecialchars($svc['title']) ?></strong><br><small class="text-muted"><i class="bi <?= htmlspecialchars($svc['icon']) ?>"></i> <?= htmlspecialchars($svc['icon']) ?></small></td>
-                        <td class="text-muted small"><?= htmlspecialchars(truncate($svc['short_desc'], 60)) ?></td>
-                        <td><?= $svc['sort_order'] ?></td>
-                        <td><a href="?toggle=<?= $svc['id'] ?>" class="adm-badge <?= $svc['is_active'] ? 'green' : 'gray' ?>"><?= $svc['is_active'] ? 'Aktif' : 'Nonaktif' ?></a></td>
-                        <td><a href="?featured=<?= $svc['id'] ?>" class="adm-badge <?= $svc['is_featured'] ? 'yellow' : 'gray' ?>"><?= $svc['is_featured'] ? '★ Featured' : 'Biasa' ?></a></td>
-                        <td>
-                            <a href="?edit=<?= $svc['id'] ?>" class="btn-adm edit" onclick="openModal(<?= htmlspecialchars(json_encode($svc)) ?>);return false;"><i class="bi bi-pencil"></i> Edit</a>
-                            <a href="?delete=<?= $svc['id'] ?>" class="btn-adm del ms-1" onclick="return confirm('Hapus layanan ini?')"><i class="bi bi-trash"></i></a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
+                    <table class="adm-table">
+                        <thead><tr><th>Gambar</th><th>Judul</th><th>Deskripsi</th><th>Sort</th><th>Status</th><th>Featured</th><th>Aksi</th></tr></thead>
+                        <tbody>
+                        <?php foreach ($services as $svc): ?>
+                        <tr>
+                            <td class="nowrap"><?php if (!empty($svc['image'])): ?><img src="<?= uploadUrl($svc['image']) ?>" class="thumb"><?php else: ?><div style="width:48px;height:36px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="bi <?= htmlspecialchars($svc['icon']) ?>"></i></div><?php endif; ?></td>
+                            <td class="nowrap"><strong><?= htmlspecialchars($svc['title']) ?></strong><br><small class="text-muted"><i class="bi <?= htmlspecialchars($svc['icon']) ?>"></i> <?= htmlspecialchars($svc['icon']) ?></small></td>
+                            <td class="text-muted small" style="min-width: 250px;"><?= htmlspecialchars(truncate($svc['short_desc'], 60)) ?></td>
+                            <td class="nowrap"><?= $svc['sort_order'] ?></td>
+                            <td class="nowrap"><a href="?toggle=<?= $svc['id'] ?>" class="adm-badge <?= $svc['is_active'] ? 'green' : 'gray' ?>"><?= $svc['is_active'] ? 'Aktif' : 'Nonaktif' ?></a></td>
+                            <td class="nowrap"><a href="?featured=<?= $svc['id'] ?>" class="adm-badge <?= $svc['is_featured'] ? 'yellow' : 'gray' ?>"><?= $svc['is_featured'] ? '★ Featured' : 'Biasa' ?></a></td>
+                            
+                            <td class="nowrap">
+                                <div class="action-btns">
+                                    <a href="?edit=<?= $svc['id'] ?>" class="btn-adm edit" onclick="openModal(<?= htmlspecialchars(json_encode($svc)) ?>);return false;"><i class="bi bi-pencil"></i></a>
+                                    <a href="?delete=<?= $svc['id'] ?>" class="btn-adm del" onclick="return confirm('Hapus layanan ini?')"><i class="bi bi-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
                 <?php endif; ?>
             </div>

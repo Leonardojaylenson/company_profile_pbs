@@ -7,8 +7,28 @@ requireAdminLogin();
 $admin = currentAdmin();
 $pdo = getPDO();
 
-if (isset($_GET['delete'])) { $pdo->prepare("DELETE FROM testimonials WHERE id=?")->execute([(int)$_GET['delete']]); header('Location: ' . BASE_URL . '/admin/testimonials.php'); exit; }
-if (isset($_GET['toggle'])) { $pdo->prepare("UPDATE testimonials SET is_active=1-is_active WHERE id=?")->execute([(int)$_GET['toggle']]); header('Location: ' . BASE_URL . '/admin/testimonials.php'); exit; }
+if (isset($_GET['delete'])) {
+    $stmt = $pdo->prepare("SELECT name FROM testimonials WHERE id=?");
+    $stmt->execute([(int)$_GET['delete']]);
+    $row = $stmt->fetch();
+    $pdo->prepare("DELETE FROM testimonials WHERE id=?")->execute([(int)$_GET['delete']]);
+    logActivity($admin['id'], 'DELETE_TESTIMONIAL', 'Menghapus testimoni', [
+        'Nama' => $row['name'] ?? '(tidak diketahui)',
+        'ID'   => (string)(int)$_GET['delete'],
+    ]);
+    header('Location: ' . BASE_URL . '/admin/testimonials.php'); exit;
+}
+if (isset($_GET['toggle'])) {
+    $stmt = $pdo->prepare("SELECT name, is_active FROM testimonials WHERE id=?");
+    $stmt->execute([(int)$_GET['toggle']]);
+    $row = $stmt->fetch();
+    $pdo->prepare("UPDATE testimonials SET is_active=1-is_active WHERE id=?")->execute([(int)$_GET['toggle']]);
+    logActivity($admin['id'], 'TOGGLE_TESTIMONIAL', 'Mengubah status testimoni', [
+        'Nama'   => $row['name'] ?? '-',
+        'Status' => ['old'=>$row['is_active']?'Aktif':'Nonaktif','new'=>$row['is_active']?'Nonaktif':'Aktif'],
+    ]);
+    header('Location: ' . BASE_URL . '/admin/testimonials.php'); exit;
+}
 
 $success = $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -26,13 +46,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($name)||empty($content)) { $error = 'Nama dan isi testimoni wajib diisi.'; }
     else {
         if ($id > 0) {
+            $old = $pdo->prepare("SELECT * FROM testimonials WHERE id=?");
+            $old->execute([$id]);
+            $old = $old->fetch();
+
             $pdo->prepare("UPDATE testimonials SET name=?,position=?,company=?,content=?,rating=?,avatar=?,sort_order=?,is_active=? WHERE id=?")
                 ->execute([$name,$position,$company,$content,$rating,$avatar,$sort_order,$is_active,$id]);
+
+            $changes = [];
+            if ($old['name']     !== $name)     $changes['Nama']      = ['old'=>$old['name'],    'new'=>$name];
+            if ($old['position'] !== $position)  $changes['Jabatan']   = ['old'=>$old['position'],'new'=>$position];
+            if ($old['company']  !== $company)   $changes['Perusahaan']= ['old'=>$old['company'], 'new'=>$company];
+            if ((int)$old['rating'] !== $rating) $changes['Rating']    = ['old'=>$old['rating'].' bintang','new'=>$rating.' bintang'];
+            if ($old['content']  !== $content)   $changes['Isi']       = 'Diubah ('.mb_strlen($content).' karakter)';
+            if ((int)$old['is_active'] !== $is_active)
+                $changes['Status'] = ['old'=>$old['is_active']?'Aktif':'Nonaktif','new'=>$is_active?'Aktif':'Nonaktif'];
+            if (!empty($avatar) && $old['avatar'] !== $avatar)
+                $changes['Foto'] = ['old'=>basename($old['avatar']??'-'),'new'=>basename($avatar)];
+
+            logActivity($admin['id'], 'EDIT_TESTIMONIAL', 'Edit testimoni: '.$name.(!empty($changes)?' ('.count($changes).' perubahan)':''), $changes);
         } else {
             $pdo->prepare("INSERT INTO testimonials(name,position,company,content,rating,avatar,sort_order,is_active) VALUES(?,?,?,?,?,?,?,?)")
                 ->execute([$name,$position,$company,$content,$rating,$avatar,$sort_order,$is_active]);
+            logActivity($admin['id'], 'ADD_TESTIMONIAL', 'Menambahkan testimoni baru', [
+                'Nama'       => $name,
+                'Jabatan'    => $position ?: '-',
+                'Perusahaan' => $company  ?: '-',
+                'Rating'     => $rating.' bintang',
+                'Status'     => $is_active ? 'Aktif' : 'Nonaktif',
+            ]);
         }
-        logActivity($admin['id'], 'SAVE_TESTIMONIAL', $name);
         $success = 'Testimoni berhasil disimpan!';
     }
 }
@@ -67,25 +110,28 @@ $items = $pdo->query("SELECT * FROM testimonials ORDER BY sort_order ASC, id DES
                 <div class="empty-state"><i class="bi bi-chat-quote"></i><p>Belum ada testimoni.</p></div>
                 <?php else: ?>
                 <div class="table-responsive">
-                <table class="adm-table">
-                    <thead><tr><th>Foto</th><th>Nama</th><th>Jabatan</th><th>Rating</th><th>Isi</th><th>Status</th><th>Aksi</th></tr></thead>
-                    <tbody>
-                    <?php foreach ($items as $t): ?>
-                    <tr>
-                        <td><?php if (!empty($t['avatar'])): ?><img src="<?= uploadUrl($t['avatar']) ?>" class="thumb" style="border-radius:50%;"><?php else: ?><div style="width:36px;height:36px;border-radius:50%;background:#1B4F8A;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;"><?= mb_strtoupper(mb_substr($t['name'],0,1)) ?></div><?php endif; ?></td>
-                        <td><strong><?= htmlspecialchars($t['name']) ?></strong></td>
-                        <td class="text-muted small"><?= htmlspecialchars($t['position'] ?? '') ?><?= !empty($t['company']) ? ' · '.htmlspecialchars($t['company']) : '' ?></td>
-                        <td><?= str_repeat('★', (int)$t['rating']) ?></td>
-                        <td class="text-muted small"><?= htmlspecialchars(truncate($t['content'], 60)) ?></td>
-                        <td><a href="?toggle=<?= $t['id'] ?>" class="adm-badge <?= $t['is_active'] ? 'green' : 'gray' ?>"><?= $t['is_active'] ? 'Aktif' : 'Nonaktif' ?></a></td>
-                        <td>
-                            <a href="#" class="btn-adm edit" onclick="openModal(<?= htmlspecialchars(json_encode($t)) ?>);return false;"><i class="bi bi-pencil"></i></a>
-                            <a href="?delete=<?= $t['id'] ?>" class="btn-adm del ms-1" onclick="return confirm('Hapus?')"><i class="bi bi-trash"></i></a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
+                    <table class="adm-table">
+                        <thead><tr><th>Foto</th><th>Nama</th><th>Jabatan</th><th>Rating</th><th>Isi</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody>
+                        <?php foreach ($items as $t): ?>
+                        <tr>
+                            <td class="nowrap"><?php if (!empty($t['avatar'])): ?><img src="<?= uploadUrl($t['avatar']) ?>" class="thumb" style="border-radius:50%;"><?php else: ?><div style="width:36px;height:36px;border-radius:50%;background:#1B4F8A;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;"><?= mb_strtoupper(mb_substr($t['name'],0,1)) ?></div><?php endif; ?></td>
+                            <td class="nowrap"><strong><?= htmlspecialchars($t['name']) ?></strong></td>
+                            <td class="text-muted small nowrap"><?= htmlspecialchars($t['position']??'') ?><?= !empty($t['company'])?' · '.htmlspecialchars($t['company']):'' ?></td>
+                            <td class="nowrap"><?= str_repeat('★',(int)$t['rating']) ?></td>
+                            <td class="text-muted small" style="min-width: 250px;"><?= htmlspecialchars(truncate($t['content'],60)) ?></td>
+                            <td class="nowrap"><a href="?toggle=<?= $t['id'] ?>" class="adm-badge <?= $t['is_active']?'green':'gray' ?>"><?= $t['is_active']?'Aktif':'Nonaktif' ?></a></td>
+                            
+                            <td class="nowrap">
+                                <div class="action-btns">
+                                    <a href="#" class="btn-adm edit" onclick="openModal(<?= htmlspecialchars(json_encode($t)) ?>);return false;"><i class="bi bi-pencil"></i></a>
+                                    <a href="?delete=<?= $t['id'] ?>" class="btn-adm del" onclick="return confirm('Hapus?')"><i class="bi bi-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
                 <?php endif; ?>
             </div>
@@ -137,6 +183,7 @@ function openModal(d=null){
         document.getElementById('f_is_active').checked=d.is_active==1;
         document.getElementById('f_existing_avatar').value=d.avatar||'';
         if(d.avatar){document.getElementById('curImgWrap').style.display='block';document.getElementById('curImg').src='<?= BASE_URL ?>/public/'+d.avatar;}
+        else{document.getElementById('curImgWrap').style.display='none';}
     } else {
         document.getElementById('modalTitle').textContent='Tambah Testimoni';
         document.getElementById('f_id').value='';

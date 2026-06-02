@@ -10,22 +10,27 @@ $menus = [
     ['file' => 'settings',     'icon' => 'bi-gear-fill',       'label' => 'Pengaturan Situs'],
     ['file' => 'services',     'icon' => 'bi-grid-fill',       'label' => 'Layanan'],
     ['file' => 'routes',       'icon' => 'bi-map-fill',        'label' => 'Rute Pelayaran'],
+    ['file' => 'cargo_types', 'icon' => 'bi bi-truck',        'label' => 'Tipe Cargo'],
     ['file' => 'news',         'icon' => 'bi-newspaper',       'label' => 'Berita'],
     ['file' => 'testimonials', 'icon' => 'bi-chat-quote-fill', 'label' => 'Testimoni'],
     ['file' => 'messages',     'icon' => 'bi-envelope-fill',   'label' => 'Pesan Masuk'],
-    ['file' => 'activity_log', 'icon' => 'bi-envelope-fill',   'label' => 'Log Aktifitas'],
-    ['file' => 'admins', 'icon' => 'bi-people-fill', 'label' => 'Kelola Admin'],
-
 ];
-// if ($admin['role'] === 'superadmin') {
-//     $menus = [
-//         ['file' => 'activity_log', 'icon' => 'bi-envelope-fill',   'label' => 'Log Aktifitas'],
-//         ['file' => 'admins', 'icon' => 'bi-people-fill', 'label' => 'Kelola Admin'],
-//     ];
-// }
+
+if ($admin['role'] === 'superadmin') {
+    $menus[] = [
+        'file' => 'activity_log',
+        'icon' => 'bi-clock-history',
+        'label' => 'Log Aktivitas'
+    ];
+
+    $menus[] = [
+        'file' => 'admins',
+        'icon' => 'bi-people-fill',
+        'label' => 'Kelola Admin'
+    ];
+}
 ?>
 <div class="pbs-sidebar" id="pbsSidebar">
-    <!-- Brand -->
     <div class="sidebar-brand">
         <div class="sidebar-brand-icon"><i class="bi bi-anchor"></i></div>
         <div class="sidebar-brand-text">
@@ -35,7 +40,6 @@ $menus = [
         <button class="sidebar-close d-lg-none" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
     </div>
 
-    <!-- Admin Info -->
     <div class="sidebar-user">
         <div class="sidebar-avatar">
             <?php if (!empty($admin['avatar'])): ?>
@@ -50,7 +54,6 @@ $menus = [
         </div>
     </div>
 
-    <!-- Nav -->
     <nav class="sidebar-nav">
         <div class="sidebar-nav-label">Menu Utama</div>
         <?php foreach ($menus as $m): ?>
@@ -62,9 +65,7 @@ $menus = [
         <?php endforeach; ?>
     </nav>
 
-    <!-- Bottom -->
-    <div class="sidebar-bottom">
-        <a href="<?= BASE_URL ?>/" class="sidebar-nav-item">
+    <div class="sidebar-bottom mt-auto"> <a href="<?= BASE_URL ?>/" class="sidebar-nav-item">
             <i class="bi bi-box-arrow-up-right"></i><span>Lihat Website</span>
         </a>
         <a href="<?= BASE_URL ?>/admin/logout.php" class="sidebar-nav-item text-danger-soft">

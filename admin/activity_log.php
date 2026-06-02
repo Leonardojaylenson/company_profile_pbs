@@ -277,52 +277,35 @@ $totalStats = $pdo->query("SELECT COUNT(*) AS total_all FROM activity_log")->fet
                                     <th>Admin</th>
                                     <th>Aksi</th>
                                     <th>Deskripsi</th>
-                                    <th>IP Address</th>
                                     <th style="white-space:nowrap;">Waktu</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            <?php foreach ($logs as $i => $log):
-                                $style = actionStyle($log['action']);
-                            ?>
+                            <?php foreach ($logs as $i => $log): $style = actionStyle($log['action']); ?>
                                 <tr>
-                                    <td class="text-muted small"><?= $offset + $i + 1 ?></td>
-                                    <td>
+                                    <td class="text-muted small nowrap"><?= $offset + $i + 1 ?></td>
+                                    <td class="nowrap">
                                         <div class="d-flex align-items-center gap-2">
-                                            <div class="avatar-xs">
-                                                <?= mb_strtoupper(mb_substr($log['full_name'] ?? '?', 0, 1)) ?>
-                                            </div>
+                                            <div class="avatar-xs"><?= mb_strtoupper(mb_substr($log['full_name'] ?? '?', 0, 1)) ?></div>
                                             <div>
                                                 <div class="fw-semibold small"><?= htmlspecialchars($log['full_name'] ?? 'Dihapus') ?></div>
                                                 <div class="text-muted" style="font-size:11px;">
                                                     @<?= htmlspecialchars($log['username'] ?? '-') ?>
-                                                    <?php if ($log['admin_role']): ?>
-                                                        · <?= htmlspecialchars($log['admin_role']) ?>
-                                                    <?php endif; ?>
+                                                    <?php if ($log['admin_role']): ?> · <?= htmlspecialchars($log['admin_role']) ?><?php endif; ?>
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>
-                                        <span class="action-badge <?= $style['badge'] ?>">
-                                            <i class="bi <?= $style['icon'] ?>"></i>
-                                            <?= htmlspecialchars($log['action']) ?>
-                                        </span>
+                                    <td class="nowrap">
+                                        <span class="action-badge <?= $style['badge'] ?>"><i class="bi <?= $style['icon'] ?>"></i> <?= htmlspecialchars($log['action']) ?></span>
                                     </td>
-                                    <td style="max-width:300px;">
+                                    <td style="min-width: 250px;">
                                         <div class="d-flex align-items-start gap-2">
                                             <span class="log-dot <?= $style['badge'] ?> mt-1"></span>
-                                            <span class="text-muted small" style="line-height:1.5;">
-                                                <?= htmlspecialchars($log['description'] ?: '—') ?>
-                                            </span>
+                                            <span class="text-muted small" style="line-height:1.5;"><?= htmlspecialchars($log['description'] ?: '—') ?></span>
                                         </div>
                                     </td>
-                                    <td>
-                                        <span class="text-muted small" style="font-family:monospace;">
-                                            <?= htmlspecialchars($log['ip_address'] ?: '—') ?>
-                                        </span>
-                                    </td>
-                                    <td style="white-space:nowrap;">
+                                    <td class="nowrap">
                                         <div class="small fw-semibold"><?= date('d/m/Y', strtotime($log['created_at'])) ?></div>
                                         <div class="text-muted" style="font-size:11px;"><?= date('H:i:s', strtotime($log['created_at'])) ?></div>
                                     </td>

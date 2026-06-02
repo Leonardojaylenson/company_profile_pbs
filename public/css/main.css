@@ -336,7 +336,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .stat-label {
     font-size: 0.82rem;
-    color: rgba(255,255,255,0.7);
+    color: rgba(0, 0, 0, 0.7);
     font-weight: 500;
     margin-top: 0.25rem;
     text-transform: uppercase;

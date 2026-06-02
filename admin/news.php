@@ -7,8 +7,28 @@ requireAdminLogin();
 $admin = currentAdmin();
 $pdo = getPDO();
 
-if (isset($_GET['delete'])) { $pdo->prepare("DELETE FROM news WHERE id=?")->execute([(int)$_GET['delete']]); header('Location: ' . BASE_URL . '/admin/news.php'); exit; }
-if (isset($_GET['toggle'])) { $pdo->prepare("UPDATE news SET is_published=1-is_published WHERE id=?")->execute([(int)$_GET['toggle']]); header('Location: ' . BASE_URL . '/admin/news.php'); exit; }
+if (isset($_GET['delete'])) {
+    $stmt = $pdo->prepare("SELECT title FROM news WHERE id=?");
+    $stmt->execute([(int)$_GET['delete']]);
+    $row = $stmt->fetch();
+    $pdo->prepare("DELETE FROM news WHERE id=?")->execute([(int)$_GET['delete']]);
+    logActivity($admin['id'], 'DELETE_NEWS', 'Menghapus berita', [
+        'Judul' => $row['title'] ?? '(tidak diketahui)',
+        'ID'    => (string)(int)$_GET['delete'],
+    ]);
+    header('Location: ' . BASE_URL . '/admin/news.php'); exit;
+}
+if (isset($_GET['toggle'])) {
+    $stmt = $pdo->prepare("SELECT title, is_published FROM news WHERE id=?");
+    $stmt->execute([(int)$_GET['toggle']]);
+    $row = $stmt->fetch();
+    $pdo->prepare("UPDATE news SET is_published=1-is_published WHERE id=?")->execute([(int)$_GET['toggle']]);
+    logActivity($admin['id'], 'TOGGLE_NEWS', 'Mengubah status publikasi berita', [
+        'Judul'  => $row['title'] ?? '-',
+        'Status' => ['old' => $row['is_published'] ? 'Publik' : 'Draft', 'new' => $row['is_published'] ? 'Draft' : 'Publik'],
+    ]);
+    header('Location: ' . BASE_URL . '/admin/news.php'); exit;
+}
 
 $success = $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -26,13 +46,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($title)||empty($content)) { $error = 'Judul dan konten wajib diisi.'; }
     else {
         if ($id > 0) {
+            // Ambil data lama untuk diff log
+            $old = $pdo->prepare("SELECT * FROM news WHERE id=?");
+            $old->execute([$id]);
+            $old = $old->fetch();
+
             $pdo->prepare("UPDATE news SET title=?,excerpt=?,content=?,category=?,author=?,is_published=?,published_at=?,image=? WHERE id=?")
                 ->execute([$title,$excerpt,$content,$category,$author,$is_published,$published_at,$image,$id]);
+
+            $changes = [];
+            if ($old['title']     !== $title)        $changes['Judul']    = ['old'=>$old['title'],    'new'=>$title];
+            if ($old['category']  !== $category)      $changes['Kategori'] = ['old'=>$old['category'], 'new'=>$category];
+            if ($old['author']    !== $author)        $changes['Penulis']  = ['old'=>$old['author'],   'new'=>$author];
+            if ((int)$old['is_published'] !== $is_published)
+                $changes['Status'] = ['old'=>$old['is_published']?'Publik':'Draft','new'=>$is_published?'Publik':'Draft'];
+            if ($old['published_at'] !== $published_at)
+                $changes['Tanggal Publish'] = ['old'=>$old['published_at'],'new'=>$published_at];
+            if (!empty($image) && $old['image'] !== $image)
+                $changes['Gambar'] = ['old'=>basename($old['image']??'-'),'new'=>basename($image)];
+            if ($old['excerpt'] !== $excerpt)
+                $changes['Ringkasan'] = ['old'=>mb_substr($old['excerpt'],0,60).'…','new'=>mb_substr($excerpt,0,60).'…'];
+            if ($old['content'] !== $content)
+                $changes['Konten'] = 'Diubah ('.mb_strlen($content).' karakter)';
+
+            logActivity($admin['id'], 'EDIT_NEWS', 'Edit berita: '.$title.(!empty($changes)?' ('.count($changes).' perubahan)':''), $changes);
         } else {
             $pdo->prepare("INSERT INTO news(title,excerpt,content,category,author,is_published,published_at,image) VALUES(?,?,?,?,?,?,?,?)")
                 ->execute([$title,$excerpt,$content,$category,$author,$is_published,$published_at,$image]);
+            logActivity($admin['id'], 'ADD_NEWS', 'Menambahkan berita baru', [
+                'Judul'    => $title,
+                'Kategori' => $category,
+                'Penulis'  => $author,
+                'Status'   => $is_published ? 'Publik' : 'Draft',
+            ]);
         }
-        logActivity($admin['id'], 'SAVE_NEWS', $title);
         $success = 'Berita berhasil disimpan!';
     }
 }
@@ -63,47 +110,44 @@ $allNews = $pdo->query("SELECT * FROM news ORDER BY created_at DESC")->fetchAll(
         <div class="adm-content">
             <?php if ($success): ?><div class="adm-alert success"><i class="bi bi-check-circle-fill"></i><?= $success ?></div><?php endif; ?>
             <?php if ($error): ?><div class="adm-alert error"><i class="bi bi-exclamation-circle"></i><?= $error ?></div><?php endif; ?>
-
             <div class="adm-card">
                 <div class="adm-card-header"><h5>Semua Berita (<?= count($allNews) ?>)</h5></div>
                 <?php if (empty($allNews)): ?>
                 <div class="empty-state"><i class="bi bi-newspaper"></i><p>Belum ada berita.</p></div>
                 <?php else: ?>
                 <div class="table-responsive">
-                <table class="adm-table">
-                    <thead><tr><th>Gambar</th><th>Judul</th><th>Kategori</th><th>Penulis</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
-                    <tbody>
-                    <?php foreach ($allNews as $n): ?>
-                    <tr>
-                        <td><?php if (!empty($n['image'])): ?><img src="<?= uploadUrl($n['image']) ?>" class="thumb"><?php else: ?><div style="width:48px;height:36px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#aaa;"><i class="bi bi-image"></i></div><?php endif; ?></td>
-                        <td><strong><?= htmlspecialchars(truncate($n['title'], 50)) ?></strong></td>
-                        <td><span class="adm-badge blue"><?= htmlspecialchars($n['category'] ?? 'Berita') ?></span></td>
-                        <td class="text-muted small"><?= htmlspecialchars($n['author'] ?? '-') ?></td>
-                        <td class="text-muted small"><?= date('d/m/Y', strtotime($n['published_at'])) ?></td>
-                        <td><a href="?toggle=<?= $n['id'] ?>" class="adm-badge <?= $n['is_published'] ? 'green' : 'gray' ?>"><?= $n['is_published'] ? 'Publik' : 'Draft' ?></a></td>
-                        <td>
-                            <a href="<?= BASE_URL ?>/news.php?id=<?= $n['id'] ?>" target="_blank" class="btn-adm secondary"><i class="bi bi-eye"></i></a>
-                            <a href="#" class="btn-adm edit ms-1" onclick="openModal(<?= htmlspecialchars(json_encode($n)) ?>);return false;"><i class="bi bi-pencil"></i></a>
-                            <a href="?delete=<?= $n['id'] ?>" class="btn-adm del ms-1" onclick="return confirm('Hapus berita ini?')"><i class="bi bi-trash"></i></a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
+                    <table class="adm-table">
+                        <thead><tr><th>Gambar</th><th>Judul</th><th>Kategori</th><th>Penulis</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody>
+                        <?php foreach ($allNews as $n): ?>
+                        <tr>
+                            <td class="nowrap"><?php if (!empty($n['image'])): ?><img src="<?= uploadUrl($n['image']) ?>" class="thumb"><?php else: ?><div style="width:48px;height:36px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#aaa;"><i class="bi bi-image"></i></div><?php endif; ?></td>
+                            <td style="min-width: 200px;"><strong><?= htmlspecialchars(truncate($n['title'],50)) ?></strong></td>
+                            <td class="nowrap"><span class="adm-badge blue"><?= htmlspecialchars($n['category']??'Berita') ?></span></td>
+                            <td class="text-muted small nowrap"><?= htmlspecialchars($n['author']??'-') ?></td>
+                            <td class="text-muted small nowrap"><?= date('d/m/Y',strtotime($n['published_at'])) ?></td>
+                            <td class="nowrap"><a href="?toggle=<?= $n['id'] ?>" class="adm-badge <?= $n['is_published']?'green':'gray' ?>"><?= $n['is_published']?'Publik':'Draft' ?></a></td>
+                            
+                            <td class="nowrap">
+                                <div class="action-btns">
+                                    <a href="<?= BASE_URL ?>/news.php?id=<?= $n['id'] ?>" target="_blank" class="btn-adm secondary"><i class="bi bi-eye"></i></a>
+                                    <a href="#" class="btn-adm edit" onclick="openModal(<?= htmlspecialchars(json_encode($n)) ?>);return false;"><i class="bi bi-pencil"></i></a>
+                                    <a href="?delete=<?= $n['id'] ?>" class="btn-adm del" onclick="return confirm('Hapus berita ini?')"><i class="bi bi-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
                 <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Modal -->
 <div class="adm-modal-overlay" id="newsModal">
 <div class="adm-modal" style="max-width:700px;">
-    <div class="adm-modal-header">
-        <h5 id="modalTitle">Tambah Berita</h5>
-        <button class="adm-modal-close" onclick="closeModal()"><i class="bi bi-x"></i></button>
-    </div>
+    <div class="adm-modal-header"><h5 id="modalTitle">Tambah Berita</h5><button class="adm-modal-close" onclick="closeModal()"><i class="bi bi-x"></i></button></div>
     <form method="POST" enctype="multipart/form-data">
     <input type="hidden" name="id" id="f_id">
     <input type="hidden" name="existing_image" id="f_existing_image">
@@ -126,7 +170,6 @@ $allNews = $pdo->query("SELECT * FROM news ORDER BY created_at DESC")->fetchAll(
     </form>
 </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const toggle=document.getElementById('topbarToggle'),sidebar=document.getElementById('pbsSidebar'),ov=document.getElementById('sidebarOverlay'),cl=document.getElementById('sidebarClose');
@@ -148,6 +191,7 @@ function openModal(d=null){
         const dt=d.published_at?d.published_at.replace(' ','T').substring(0,16):'';
         document.getElementById('f_published_at').value=dt;
         if(d.image){document.getElementById('currentImgWrap').style.display='block';document.getElementById('currentImg').src='<?= BASE_URL ?>/public/'+d.image;}
+        else{document.getElementById('currentImgWrap').style.display='none';}
     } else {
         document.getElementById('modalTitle').textContent='Tambah Berita';
         document.getElementById('f_id').value='';

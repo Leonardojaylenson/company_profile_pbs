@@ -234,44 +234,26 @@ $roleLabels = ['superadmin' => 'Super Admin', 'admin' => 'Admin', 'editor' => 'E
                                         <?php endif; ?>
                                     </div>
                                 </td>
-                                <td>
+                                <td class="nowrap">
                                     <div class="fw-semibold"><?= htmlspecialchars($a['full_name']) ?></div>
                                     <div class="text-muted small">@<?= htmlspecialchars($a['username']) ?>
-                                        <?php if ((int)$a['id'] === (int)$admin['id']): ?>
-                                            <span class="ms-1 text-primary small">(Anda)</span>
-                                        <?php endif; ?>
+                                        <?php if ((int)$a['id'] === (int)$admin['id']): ?><span class="ms-1 text-primary small">(Anda)</span><?php endif; ?>
                                     </div>
                                 </td>
-                                <td class="text-muted small"><?= htmlspecialchars($a['email']) ?></td>
-                                <td>
-                                    <span class="role-badge <?= $roleColors[$a['role']] ?? 'blue' ?>">
-                                        <?= $roleLabels[$a['role']] ?? $a['role'] ?>
-                                    </span>
-                                </td>
-                                <td class="text-muted small">
-                                    <?= $a['last_login'] ? date('d/m/Y H:i', strtotime($a['last_login'])) : '<span class="text-muted">Belum pernah</span>' ?>
-                                </td>
-                                <td class="text-muted small">
-                                    <?= date('d/m/Y', strtotime($a['created_at'])) ?>
-                                </td>
-                                <td style="white-space:nowrap;">
-                                    <button class="btn-adm edit"
-                                            onclick="openEditModal(<?= htmlspecialchars(json_encode($a), ENT_QUOTES) ?>)"
-                                            title="Edit">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <?php if ((int)$a['id'] !== (int)$admin['id']): ?>
-                                        <a href="?delete=<?= (int)$a['id'] ?>"
-                                           class="btn-adm del ms-1"
-                                           onclick="return confirm('Hapus admin <?= htmlspecialchars(addslashes($a['username'])) ?>? Tindakan ini tidak bisa dibatalkan.')"
-                                           title="Hapus">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    <?php else: ?>
-                                        <button class="btn-adm del ms-1" disabled title="Tidak bisa hapus diri sendiri" style="opacity:.35;cursor:not-allowed;">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    <?php endif; ?>
+                                <td class="text-muted small nowrap"><?= htmlspecialchars($a['email']) ?></td>
+                                <td class="nowrap"><span class="role-badge <?= $roleColors[$a['role']] ?? 'blue' ?>"><?= $roleLabels[$a['role']] ?? $a['role'] ?></span></td>
+                                <td class="text-muted small nowrap"><?= $a['last_login'] ? date('d/m/Y H:i', strtotime($a['last_login'])) : '<span class="text-muted">Belum pernah</span>' ?></td>
+                                <td class="text-muted small nowrap"><?= date('d/m/Y', strtotime($a['created_at'])) ?></td>
+                                
+                                <td class="nowrap">
+                                    <div class="action-btns">
+                                        <button class="btn-adm edit" onclick="openEditModal(<?= htmlspecialchars(json_encode($a), ENT_QUOTES) ?>)" title="Edit"><i class="bi bi-pencil"></i></button>
+                                        <?php if ((int)$a['id'] !== (int)$admin['id']): ?>
+                                            <a href="?delete=<?= (int)$a['id'] ?>" class="btn-adm del" onclick="return confirm('Hapus admin <?= htmlspecialchars(addslashes($a['username'])) ?>? Tindakan ini tidak bisa dibatalkan.')" title="Hapus"><i class="bi bi-trash"></i></a>
+                                        <?php else: ?>
+                                            <button class="btn-adm del" disabled title="Tidak bisa hapus diri sendiri" style="opacity:.35;cursor:not-allowed;"><i class="bi bi-trash"></i></button>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
