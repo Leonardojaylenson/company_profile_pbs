@@ -89,7 +89,7 @@ $pageTitle = 'Tentang Kami';
 </section>
 
 <!-- Stats -->
-<section class="stats-section">
+<section class="stats-section mb-3 mt-3">
     <div class="container">
         <div class="row g-4 justify-content-center">
             <div class="col-lg-3 col-6" data-aos="zoom-in">
@@ -131,7 +131,7 @@ $pageTitle = 'Tentang Kami';
 <!-- Vision Mission -->
 <section class="section-pad bg-light pb-5 mb-4">
     <div class="container">
-        <div class="row justify-content-center text-center mb-5">
+        <div class="row justify-content-center text-center mb-1">
             <div class="col-lg-7" data-aos="fade-up">
                 <span class="section-label">Nilai Kami</span>
                 <h2 class="section-title">Visi & Misi</h2>
@@ -140,14 +140,14 @@ $pageTitle = 'Tentang Kami';
         <div class="row g-4">
             <div class="col-md-6" data-aos="fade-up">
                 <div class="p-4 bg-white rounded-4 h-100 shadow-sm">
-                    <div class="mb-3"><i class="bi bi-eye-fill text-primary" style="font-size:2rem;"></i></div>
+                    <div class="mb-3"><i class="bi bi-eye-fill" style="font-size:2rem;"></i></div>
                     <h4>Visi</h4>
                     <p class="text-muted"><?= nl2br(htmlspecialchars($s['vision'] ?? 'Menjadi perusahaan logistik laut terdepan yang menghubungkan seluruh nusantara dengan layanan yang handal, efisien, dan terpercaya.')) ?></p>
                 </div>
             </div>
             <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
                 <div class="p-4 bg-white rounded-4 h-100 shadow-sm">
-                    <div class="mb-3"><i class="bi bi-bullseye text-danger" style="font-size:2rem;"></i></div>
+                    <div class="mb-3"><i class="bi bi-bullseye" style="font-size:2rem;"></i></div>
                     <h4>Misi</h4>
                     <p class="text-muted"><?= nl2br(htmlspecialchars($s['mission'] ?? "1. Menyediakan layanan pengiriman laut yang tepat waktu dan aman.\n2. Mengembangkan jaringan rute pelayaran yang semakin luas.\n3. Memberikan solusi logistik yang inovatif dan kompetitif.\n4. Membangun hubungan jangka panjang dengan pelanggan.")) ?></p>
                 </div>

@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ->execute([$title,$short_desc,$full_desc,$icon,$image,$features_json,$sort_order,$is_active,$is_featured,$id]);
             logActivity($admin['id'], 'UPDATE_SERVICE', $title);
         } else {
-            $pdo->prepare("INSERT INTO services(title,short_desc,full_desc,icon,image,features,sort_order,is_active,is_featured) VALUES(?,?,?,?,?,?,?,?,?,?)")
+            $pdo->prepare("INSERT INTO services(title,short_desc,full_desc,icon,image,features,sort_order,is_active,is_featured) VALUES(?,?,?,?,?,?,?,?,?)")
                 ->execute([$title,$short_desc,$full_desc,$icon,$image,$features_json,$sort_order,$is_active,$is_featured]);
             logActivity($admin['id'], 'ADD_SERVICE', $title);
         }

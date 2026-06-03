@@ -45,19 +45,21 @@ $pageTitle = 'Layanan Kami';
                     <?php endif; ?>
                     <div class="service-card-body">
                         <h3 class="service-card-title"><?= htmlspecialchars($svc['title']) ?></h3>
-                        <p class="service-card-desc"><?= htmlspecialchars(truncate($svc['short_desc'] ?? '', 120)) ?></p>
-                        <?php if (!empty($svc['features'])):
-                            $features = json_decode($svc['features'], true) ?? [];
-                        ?>
-                        <ul class="service-features-mini">
-                            <?php foreach ($features as $f): ?>
-                            <li><i class="bi bi-check-circle-fill"></i> <?= htmlspecialchars($f) ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <?php endif; ?>
-                        <a href="<?= BASE_URL ?>/contact.php?service=<?= urlencode($svc['title']) ?>" class="service-card-link mt-auto">
-                            <i class="bi bi-headset me-1"></i> Konsultasi Layanan Ini
-                        </a>
+                        
+                        <div class="mb-3">
+                            <?php if (!empty($svc['features'])):
+                                $features = json_decode($svc['features'], true) ?? [];
+                            ?>
+                            <ul class="service-features-mini">
+                                <?php foreach ($features as $f): ?>
+                                <li><i class="bi bi-check-circle-fill"></i> <?= htmlspecialchars($f) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <?php endif; ?>
+                            <a href="<?= BASE_URL ?>/contact.php?service=<?= urlencode($svc['title']) ?>" class="service-card-link mt-auto">
+                                <i class="bi bi-headset me-1"></i> Konsultasi Layanan Ini
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
