@@ -1,12 +1,10 @@
 <?php
-// news.php — News List & Detail
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
 
 $s = getAllSettings();
 
-// Detail view
 $id   = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $news = null;
 if ($id > 0) {
@@ -15,7 +13,6 @@ if ($id > 0) {
         header('Location: ' . BASE_URL . '/news.php');
         exit;
     }
-    // increment views
     try {
         getPDO()->prepare("UPDATE news SET views = views + 1 WHERE id = ?")->execute([$id]);
     } catch (Exception $e) {}
@@ -31,10 +28,8 @@ if ($id > 0) {
 <section class="page-header pt-5 mt-5">
     <div class="page-header-overlay"></div>
     <div class="container page-header-content">
-        <h1 class="page-header-title" data-aos="fade-up"><?= $news ? htmlspecialchars($news['title']) : 'Berita & Informasi' ?></h1>
-        <?php if (!$news): ?>
+        <h1 class="page-header-title" data-aos="fade-up">Berita & Informasi</h1>
         <p class="page-header-sub" data-aos="fade-up" data-aos-delay="100">Update terbaru dari PT. Prima Bahari Sejahtera</p>
-        <?php endif; ?>
         <nav aria-label="breadcrumb" data-aos="fade-up" data-aos-delay="150">
             <ol class="breadcrumb breadcrumb-dark">
                 <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/">Beranda</a></li>
@@ -64,7 +59,7 @@ if ($id > 0) {
                     <?php endif; ?>
                 </div>
                 <h1 class="mb-4" style="font-size:clamp(1.5rem,4vw,2.2rem);"><?= htmlspecialchars($news['title']) ?></h1>
-                <div class="news-content" style="line-height:1.9;color:#334155;">
+                <div class="news-content" style="line-height:1.9;color:#334155;text-align:justify;">
                     <?= nl2br(htmlspecialchars($news['content'])) ?>
                 </div>
                 <hr class="my-4">

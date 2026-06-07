@@ -1,5 +1,5 @@
 <?php
-// index.php — Homepage
+
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
@@ -14,7 +14,7 @@ $pageTitle = '';
 ?>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
-<!-- ══ HERO SECTION ══════════════════════════════════════════ -->
+
 <section class="hero-section" id="hero">
     <div class="hero-video-wrap">
         <?php if (!empty($s['hero_video'])): ?>
@@ -22,7 +22,6 @@ $pageTitle = '';
                 <source src="<?= assetUrl($s['hero_video']) ?>" type="video/mp4">
             </video>
         <?php else: ?>
-            <!-- Fallback animated SVG ocean when no video uploaded -->
             <div class="hero-fallback-bg"></div>
         <?php endif; ?>
     </div>
@@ -105,7 +104,16 @@ $pageTitle = '';
             </div>
         </div>
         <div class="row g-4">
-            <?php foreach ($services as $i => $svc): ?>
+            <?php foreach ($services as $i => $svc):
+                $features = json_decode($svc['features'] ?? '[]', true) ?? [];
+                $modalData = json_encode([
+                    'title'    => $svc['title'],
+                    'desc'     => $svc['short_desc'],
+                    'fullDesc' => $svc['full_desc'] ?? $svc['short_desc'],
+                    'features' => $features,
+                    'image'    => !empty($svc['image']) ? uploadUrl($svc['image']) : '',
+                ]);
+            ?>
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?= $i * 80 ?>">
                 <div class="service-card">
                     <?php if (!empty($svc['image'])): ?>
@@ -116,15 +124,9 @@ $pageTitle = '';
                     <div class="service-card-body">
                         <h3 class="service-card-title"><?= htmlspecialchars($svc['title']) ?></h3>
                         <p class="service-card-desc"><?= htmlspecialchars(truncate($svc['short_desc'], 120)) ?></p>
-                        <?php if (!empty($svc['features'])):
-                            $features = json_decode($svc['features'], true) ?? [];
-                        ?>
-                        <ul class="service-features-mini">
-                            <?php foreach ($features as $f): ?>
-                            <li><i class="bi bi-check-circle-fill"></i> <?= htmlspecialchars($f) ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <?php endif; ?>
+                        <button class="svc-detail-btn" onclick='openServiceModal(<?= htmlspecialchars($modalData, ENT_QUOTES) ?>)'>
+                            <i class="bi bi-info-circle me-1"></i> Detail Layanan
+                        </button>
                     </div>
                 </div>
             </div>
@@ -137,6 +139,25 @@ $pageTitle = '';
         </div>
     </div>
 </section>
+
+<!-- Modal Detail Layanan -->
+<div class="svc-modal-overlay" id="svcModalOverlay" onclick="if(event.target===this)closeSvcModal()">
+    <div class="svc-modal">
+        <div id="svcModalImg"></div>
+        <div class="svc-modal-body">
+            <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+                <h4 class="svc-modal-title" id="svcModalTitle"></h4>
+                <button class="svc-modal-close" onclick="closeSvcModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <p class="svc-modal-desc" id="svcModalDesc"></p>
+            <p class="svc-modal-feat-label">Fitur Layanan</p>
+            <ul class="svc-modal-features" id="svcModalFeatures"></ul>
+            <a href="<?= BASE_URL ?>/contact.php" class="btn btn-primary">
+                <i class="bi bi-headset me-2"></i> Konsultasi Gratis
+            </a>
+        </div>
+    </div>
+</div>
 
 <!-- ══ ABOUT STRIP ════════════════════════════════════════════ -->
 <section class="about-section" id="about">
@@ -184,9 +205,13 @@ $pageTitle = '';
                         </div>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <a href="<?= BASE_URL ?>/about.php" class="btn btn-primary me-3">Lebih Lanjut</a>
-                    <a href="<?= BASE_URL ?>/contact.php" class="btn btn-outline-primary">Konsultasi Gratis</a>
+                <div class="mt-4 d-flex flex-wrap align-items-center" style="gap: 0.75rem;">
+                    <a href="<?= BASE_URL ?>/contact.php" class="btn btn-primary">
+                        <i class="bi bi-headset me-2"></i> Konsultasi Gratis
+                    </a>
+                    <a href="<?= BASE_URL ?>/services.php" class="btn btn-outline-primary">
+                        <i class="bi bi-grid me-2"></i> Lihat Layanan
+                    </a>
                 </div>
             </div>
         </div>

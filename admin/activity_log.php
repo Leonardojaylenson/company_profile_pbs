@@ -1,5 +1,4 @@
 <?php
-// admin/activity_log.php — Log Aktivitas Admin (read-only)
 require_once dirname(__DIR__) . '/config/database.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/functions.php';
@@ -7,13 +6,11 @@ requireAdminLogin();
 $admin = currentAdmin();
 $pdo   = getPDO();
 
-// Hanya superadmin yang boleh akses
 if ($admin['role'] !== 'superadmin') {
     header('Location: ' . BASE_URL . '/admin/dashboard.php');
     exit;
 }
 
-// ─── Filter & Pagination ──────────────────────────────────────────────────────
 $filterAdmin  = isset($_GET['admin_id']) ? (int)$_GET['admin_id'] : 0;
 $filterAction = trim($_GET['action_filter'] ?? '');
 $filterDate   = trim($_GET['date'] ?? '');
@@ -21,7 +18,6 @@ $page         = max(1, (int)($_GET['page'] ?? 1));
 $perPage      = 50;
 $offset       = ($page - 1) * $perPage;
 
-// Build WHERE
 $conditions = [];
 $params     = [];
 
@@ -40,7 +36,6 @@ if ($filterDate !== '') {
 
 $where = $conditions ? ('WHERE ' . implode(' AND ', $conditions)) : '';
 
-// Total rows untuk pagination
 $countStmt = $pdo->prepare("SELECT COUNT(*) FROM activity_log l $where");
 $countStmt->execute($params);
 $totalRows  = (int)$countStmt->fetchColumn();
@@ -48,7 +43,6 @@ $totalPages = max(1, (int)ceil($totalRows / $perPage));
 $page       = min($page, $totalPages);
 $offset     = ($page - 1) * $perPage;
 
-// Ambil log
 $logStmt = $pdo->prepare("
     SELECT
         l.id,
@@ -69,11 +63,9 @@ $logStmt = $pdo->prepare("
 $logStmt->execute($params);
 $logs = $logStmt->fetchAll();
 
-// Data untuk filter dropdown
 $allAdmins  = $pdo->query("SELECT id, username, full_name FROM admins ORDER BY full_name")->fetchAll();
 $allActions = $pdo->query("SELECT DISTINCT action FROM activity_log ORDER BY action")->fetchAll(PDO::FETCH_COLUMN);
 
-// Warna dan ikon per action
 function actionStyle(string $action): array {
     return match (true) {
         str_contains($action, 'DELETE') || str_contains($action, 'HAPUS')
@@ -91,7 +83,6 @@ function actionStyle(string $action): array {
     };
 }
 
-// Hitung stat ringkasan (hari ini)
 $todayStats = $pdo->query("
     SELECT COUNT(*) AS total_today FROM activity_log WHERE DATE(created_at) = CURDATE()
 ")->fetch();
@@ -111,7 +102,6 @@ $totalStats = $pdo->query("SELECT COUNT(*) AS total_all FROM activity_log")->fet
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= BASE_URL ?>/admin/assets/admin.css">
     <style>
-        /* ── Badge warna untuk action ──────────────────────────── */
         .action-badge {
             display:inline-flex;align-items:center;gap:5px;
             padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
@@ -123,19 +113,16 @@ $totalStats = $pdo->query("SELECT COUNT(*) AS total_all FROM activity_log")->fet
         .action-badge.orange { background:#fff7ed;color:#ea580c; }
         .action-badge.gray   { background:#f1f5f9;color:#64748b; }
 
-        /* ── Stat chips ──────────────────────────────────────── */
         .stat-chips  { display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px; }
         .stat-chip   { background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;
                        padding:10px 20px;display:flex;align-items:center;gap:10px;font-size:13px; }
         .stat-chip strong { font-size:22px;font-weight:700;color:#1B4F8A; }
 
-        /* ── Filter bar ──────────────────────────────────────── */
         .filter-bar { background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;
                       padding:14px 18px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end; }
         .filter-bar .adm-input { height:36px;font-size:13px;padding:0 10px; }
         .filter-bar label { font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px; }
 
-        /* ── Timeline dot ────────────────────────────────────── */
         .log-dot { width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;margin-top:2px; }
         .log-dot.red    { background:#dc2626; }
         .log-dot.green  { background:#16a34a; }
@@ -143,13 +130,11 @@ $totalStats = $pdo->query("SELECT COUNT(*) AS total_all FROM activity_log")->fet
         .log-dot.orange { background:#ea580c; }
         .log-dot.gray   { background:#94a3b8; }
 
-        /* ── Avatar kecil ─────────────────────────────────────── */
         .avatar-xs {
             width:28px;height:28px;border-radius:50%;background:#1B4F8A;color:#fff;
             display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;
         }
 
-        /* ── Pagination ──────────────────────────────────────── */
         .pagination-bar { display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:20px; }
         .page-btn {
             padding:5px 12px;border-radius:8px;border:1.5px solid #e2e8f0;
@@ -159,7 +144,6 @@ $totalStats = $pdo->query("SELECT COUNT(*) AS total_all FROM activity_log")->fet
         .page-btn.active  { background:#1B4F8A;color:#fff;border-color:#1B4F8A; }
         .page-btn.disabled{ opacity:.4;pointer-events:none; }
 
-        /* ── Read-only notice ────────────────────────────────── */
         .readonly-notice {
             display:inline-flex;align-items:center;gap:6px;
             background:#f0f6ff;border:1.5px solid #bfdbfe;border-radius:8px;
@@ -186,7 +170,6 @@ $totalStats = $pdo->query("SELECT COUNT(*) AS total_all FROM activity_log")->fet
 
         <div class="adm-content">
 
-            <!-- Stat chips -->
             <div class="stat-chips">
                 <div class="stat-chip">
                     <i class="bi bi-clock text-primary fs-5"></i>
@@ -202,7 +185,6 @@ $totalStats = $pdo->query("SELECT COUNT(*) AS total_all FROM activity_log")->fet
                 </div>
             </div>
 
-            <!-- Filter -->
             <form method="GET" id="filterForm">
                 <div class="filter-bar">
                     <div>
@@ -251,7 +233,6 @@ $totalStats = $pdo->query("SELECT COUNT(*) AS total_all FROM activity_log")->fet
                 </div>
             </form>
 
-            <!-- Tabel Log -->
             <div class="adm-card">
                 <div class="adm-card-header">
                     <h5>
@@ -315,9 +296,7 @@ $totalStats = $pdo->query("SELECT COUNT(*) AS total_all FROM activity_log")->fet
                         </table>
                     </div>
 
-                    <!-- Pagination -->
                     <?php if ($totalPages > 1):
-                        // Buat query string tanpa 'page'
                         $qp = $_GET;
                         unset($qp['page']);
                         $qBase = $qp ? ('&' . http_build_query($qp)) : '';
@@ -359,7 +338,7 @@ $totalStats = $pdo->query("SELECT COUNT(*) AS total_all FROM activity_log")->fet
                 <?php endif; ?>
             </div>
 
-        </div><!-- /adm-content -->
+        </div>
     </div>
 </div>
 

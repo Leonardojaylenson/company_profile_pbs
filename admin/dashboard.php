@@ -1,5 +1,4 @@
 <?php
-// admin/dashboard.php
 require_once dirname(__DIR__) . '/config/database.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/functions.php';
@@ -39,7 +38,6 @@ try {
 <div class="adm-layout">
     <?php include __DIR__ . '/includes/sidebar.php'; ?>
     <div class="adm-main">
-        <!-- Topbar -->
         <div class="adm-topbar">
             <button class="topbar-toggle" id="topbarToggle"><i class="bi bi-list"></i></button>
             <div class="topbar-title">Dashboard</div>
@@ -50,13 +48,11 @@ try {
         </div>
 
         <div class="adm-content">
-            <!-- Welcome -->
             <div class="mb-4 p-4 rounded-3" style="background:linear-gradient(135deg,#1B4F8A,#0F3260);color:white;">
                 <h5 class="fw-800 mb-1">Selamat Datang, <?= htmlspecialchars($admin['name']) ?>! 👋</h5>
                 <p class="mb-0 opacity-75 small">Panel kontrol PT. Prima Bahari Sejahtera</p>
             </div>
 
-            <!-- Stats -->
             <div class="row g-3 mb-4">
                 <div class="col-6 col-lg-3">
                     <div class="stat-card">
@@ -90,7 +86,6 @@ try {
             </div>
 
             <div class="row g-4">
-                <!-- Recent Messages -->
                 <div class="col-lg-6">
                     <div class="adm-card">
                         <div class="adm-card-header">
@@ -116,7 +111,6 @@ try {
                     </div>
                 </div>
 
-                <!-- Recent News -->
                 <div class="col-lg-6">
                     <div class="adm-card">
                         <div class="adm-card-header">
@@ -142,7 +136,6 @@ try {
                     </div>
                 </div>
 
-                <!-- Quick Links -->
                 <div class="col-12">
                     <div class="adm-card">
                         <div class="adm-card-header"><h5>Akses Cepat</h5></div>

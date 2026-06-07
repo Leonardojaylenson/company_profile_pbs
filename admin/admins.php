@@ -1,5 +1,4 @@
 <?php
-// admin/admins.php — Kelola Admin
 require_once dirname(__DIR__) . '/config/database.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/functions.php';
@@ -7,7 +6,6 @@ requireAdminLogin();
 $admin = currentAdmin();
 $pdo   = getPDO();
 
-// Hanya superadmin yang boleh akses halaman ini
 if ($admin['role'] !== 'superadmin') {
     header('Location: ' . BASE_URL . '/admin/dashboard.php');
     exit;
@@ -18,7 +16,6 @@ define('DEFAULT_PASSWORD', 'Admin@1234');
 $success = '';
 $error   = '';
 
-// ─── Tambah Admin Baru ────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add') {
     $username  = trim($_POST['username']  ?? '');
     $email     = trim($_POST['email']     ?? '');
@@ -33,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add')
     } elseif (preg_match('/\s/', $username)) {
         $error = 'Username tidak boleh mengandung spasi.';
     } else {
-        // Cek duplikat
         $dup = $pdo->prepare("SELECT id FROM admins WHERE username = ? OR email = ?");
         $dup->execute([$username, $email]);
         if ($dup->fetch()) {
@@ -51,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add')
     }
 }
 
-// ─── Edit Admin ───────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'edit') {
     $id        = (int)($_POST['id']        ?? 0);
     $email     = trim($_POST['email']     ?? '');
@@ -64,10 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'edit'
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Format email tidak valid.';
     } elseif ($id === (int)$admin['id'] && $role !== 'superadmin') {
-        // Cegah superadmin menurunkan role dirinya sendiri
         $error = 'Tidak dapat mengubah role akun Anda sendiri.';
     } else {
-        // Cek duplikat email (kecuali milik sendiri)
         $dup = $pdo->prepare("SELECT id FROM admins WHERE email = ? AND id != ?");
         $dup->execute([$email, $id]);
         if ($dup->fetch()) {
@@ -77,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'edit'
                 UPDATE admins SET email = ?, full_name = ?, role = ? WHERE id = ?
             ")->execute([$email, $full_name, $role, $id]);
 
-            // Reset password jika diminta
             if (!empty($_POST['reset_password'])) {
                 $hashed = password_hash(DEFAULT_PASSWORD, PASSWORD_BCRYPT);
                 $pdo->prepare("UPDATE admins SET password = ? WHERE id = ?")->execute([$hashed, $id]);
@@ -92,13 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'edit'
     }
 }
 
-// ─── Hapus Admin ──────────────────────────────────────────────────────────────
 if (isset($_GET['delete'])) {
     $delId = (int)$_GET['delete'];
     if ($delId === (int)$admin['id']) {
         $error = 'Tidak dapat menghapus akun Anda sendiri.';
     } else {
-        // Cek apakah target adalah superadmin — hitung berapa superadmin tersisa
         $target = $pdo->prepare("SELECT role FROM admins WHERE id = ?");
         $target->execute([$delId]);
         $targetRow = $target->fetch();
@@ -122,7 +112,6 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// ─── Ambil semua admin ────────────────────────────────────────────────────────
 $admins = $pdo->query("
     SELECT id, username, email, full_name, role, avatar, last_login, created_at
     FROM admins
@@ -131,7 +120,6 @@ $admins = $pdo->query("
         created_at ASC
 ")->fetchAll();
 
-// Admin yang sedang di-edit (dari GET ?edit=id)
 $editTarget = null;
 if (isset($_GET['edit'])) {
     $stmt = $pdo->prepare("SELECT id, username, email, full_name, role FROM admins WHERE id = ?");
@@ -198,7 +186,6 @@ $roleLabels = ['superadmin' => 'Super Admin', 'admin' => 'Admin', 'editor' => 'E
                 <div class="adm-alert error"><i class="bi bi-exclamation-circle"></i> <?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
-            <!-- Info password default -->
             <div class="default-pass-box">
                 <i class="bi bi-key-fill text-success me-2"></i>
                 Password default untuk admin baru: <code><?= DEFAULT_PASSWORD ?></code>
@@ -261,13 +248,10 @@ $roleLabels = ['superadmin' => 'Super Admin', 'admin' => 'Admin', 'editor' => 'E
                     </table>
                 </div>
             </div>
-        </div><!-- /adm-content -->
+        </div>
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     MODAL: Tambah Admin
-═══════════════════════════════════════════════════════════ -->
 <div class="adm-modal-overlay" id="addModal">
     <div class="adm-modal" style="max-width:500px;">
         <div class="adm-modal-header">
@@ -315,9 +299,6 @@ $roleLabels = ['superadmin' => 'Super Admin', 'admin' => 'Admin', 'editor' => 'E
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     MODAL: Edit Admin
-═══════════════════════════════════════════════════════════ -->
 <div class="adm-modal-overlay" id="editModal">
     <div class="adm-modal" style="max-width:500px;">
         <div class="adm-modal-header">
@@ -369,7 +350,6 @@ $roleLabels = ['superadmin' => 'Super Admin', 'admin' => 'Admin', 'editor' => 'E
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ── Sidebar ──────────────────────────────────────────────────────────────────
 const toggle  = document.getElementById('topbarToggle');
 const sidebar = document.getElementById('pbsSidebar');
 const ov      = document.getElementById('sidebarOverlay');
@@ -378,13 +358,11 @@ toggle?.addEventListener('click', () => { sidebar.classList.toggle('open'); ov.c
 ov?.addEventListener('click',     () => { sidebar.classList.remove('open'); ov.classList.remove('show'); });
 cl?.addEventListener('click',     () => { sidebar.classList.remove('open'); ov.classList.remove('show'); });
 
-// ── Modal Tambah ──────────────────────────────────────────────────────────────
 const addModal  = document.getElementById('addModal');
 function openAddModal()  { addModal.classList.add('show'); }
 function closeAddModal() { addModal.classList.remove('show'); }
 addModal.addEventListener('click', e => { if (e.target === addModal) closeAddModal(); });
 
-// ── Modal Edit ────────────────────────────────────────────────────────────────
 const editModal     = document.getElementById('editModal');
 const currentAdminId = <?= (int)$admin['id'] ?>;
 
@@ -396,7 +374,6 @@ function openEditModal(d) {
     document.getElementById('editRole').value        = d.role;
     document.getElementById('resetPassCheck').checked = false;
 
-    // Kalau edit diri sendiri, disable role
     const roleWrapper = document.getElementById('editRoleWrapper');
     if (parseInt(d.id) === currentAdminId) {
         document.getElementById('editRole').disabled = true;

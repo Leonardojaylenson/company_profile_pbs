@@ -1,5 +1,4 @@
 <?php
-// about.php — About Page
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
@@ -25,7 +24,7 @@ $pageTitle = 'Tentang Kami';
 </section>
 
 <!-- About Content -->
-<section class="section-pad">
+<section class="section-pad mb-4">
     <div class="container">
         <div class="row align-items-center g-5">
             <div class="col-lg-6" data-aos="fade-right">
@@ -75,8 +74,8 @@ $pageTitle = 'Tentang Kami';
                         </div>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <a href="<?= BASE_URL ?>/contact.php" class="btn btn-primary me-3">
+                <div class="mt-4 d-flex flex-wrap align-items-center" style="gap: 0.75rem;">
+                    <a href="<?= BASE_URL ?>/contact.php" class="btn btn-primary">
                         <i class="bi bi-headset me-2"></i> Konsultasi Gratis
                     </a>
                     <a href="<?= BASE_URL ?>/services.php" class="btn btn-outline-primary">
@@ -88,52 +87,11 @@ $pageTitle = 'Tentang Kami';
     </div>
 </section>
 
-<!-- Stats -->
-<section class="stats-section mb-3 mt-3">
-    <div class="container">
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-3 col-6" data-aos="zoom-in">
-                <div class="stat-counter-card">
-                    <i class="bi bi-calendar-check stat-icon"></i>
-                    <div class="stat-number" data-count="<?= preg_replace('/\D/', '', $s['stat_years'] ?? '10') ?>">0</div>
-                    <div class="stat-suffix">+</div>
-                    <div class="stat-label">Tahun Pengalaman</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" data-aos="zoom-in" data-aos-delay="100">
-                <div class="stat-counter-card">
-                    <i class="bi bi-geo-alt stat-icon"></i>
-                    <div class="stat-number" data-count="<?= preg_replace('/\D/', '', $s['stat_routes'] ?? '50') ?>">0</div>
-                    <div class="stat-suffix">+</div>
-                    <div class="stat-label">Rute Pelayaran</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" data-aos="zoom-in" data-aos-delay="200">
-                <div class="stat-counter-card">
-                    <i class="bi bi-box-seam stat-icon"></i>
-                    <div class="stat-number" data-count="<?= preg_replace('/\D/', '', str_replace(['.', ','], '', $s['stat_containers'] ?? '5000')) ?>">0</div>
-                    <div class="stat-suffix">+</div>
-                    <div class="stat-label">Kontainer/Tahun</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" data-aos="zoom-in" data-aos-delay="300">
-                <div class="stat-counter-card">
-                    <i class="bi bi-people stat-icon"></i>
-                    <div class="stat-number" data-count="<?= preg_replace('/\D/', '', $s['stat_clients'] ?? '200') ?>">0</div>
-                    <div class="stat-suffix">+</div>
-                    <div class="stat-label">Pelanggan Setia</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Vision Mission -->
 <section class="section-pad bg-light pb-5 mb-4">
     <div class="container">
         <div class="row justify-content-center text-center mb-1">
-            <div class="col-lg-7" data-aos="fade-up">
-                <span class="section-label">Nilai Kami</span>
+            <div class="col-lg-7 mt-4" data-aos="fade-up">
                 <h2 class="section-title">Visi & Misi</h2>
             </div>
         </div>

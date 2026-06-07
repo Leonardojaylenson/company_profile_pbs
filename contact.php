@@ -1,5 +1,4 @@
 <?php
-// contact.php — Contact Page
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
@@ -9,14 +8,12 @@ $pageTitle = 'Kontak';
 $success = false;
 $error   = '';
 
-// Ambil jenis muatan dari database (aktif, urut sort_order)
 $pdo = getPDO();
 $cargoTypes = $pdo->query("SELECT * FROM cargo_types WHERE is_active=1 ORDER BY sort_order ASC, name ASC")->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cargoTypeId = (int)($_POST['cargo_type_id'] ?? 0);
 
-    // Cari nama cargo_type berdasarkan id yang dipilih
     $cargoTypeName = 'Lainnya';
     foreach ($cargoTypes as $ct) {
         if ((int)$ct['id'] === $cargoTypeId) {
@@ -31,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'phone'         => trim($_POST['phone']   ?? ''),
         'subject'       => trim($_POST['subject'] ?? ''),
         'message'       => trim($_POST['message'] ?? ''),
-        'cargo_type'    => $cargoTypeName,   // nama teks (legacy / fallback)
+        'cargo_type'    => $cargoTypeName,  
         'cargo_type_id' => $cargoTypeId > 0 ? $cargoTypeId : null,
     ];
 

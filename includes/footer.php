@@ -104,6 +104,31 @@ $services = getServices();
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script src="<?= BASE_URL ?>/public/js/main.js"></script>
+<script>
+    function openServiceModal(d) {
+        document.getElementById('svcModalTitle').textContent = d.title;
+        document.getElementById('svcModalDesc').textContent = d.fullDesc;
+        const imgArea = document.getElementById('svcModalImg');
+        imgArea.innerHTML = d.image
+            ? `<img src="${d.image}" alt="${d.title}">`
+            : `<div class="svc-modal-img-placeholder"><i class="bi bi-ship"></i></div>`;
+        const ul = document.getElementById('svcModalFeatures');
+        ul.innerHTML = (d.features || []).map(f =>
+            `<li><i class="bi bi-check-circle-fill"></i> ${f}</li>`
+        ).join('');
+        // update CTA jika ada (hanya di services.php)
+        const cta = document.getElementById('svcModalCta');
+        if (cta && d.url) cta.href = d.url;
+        document.getElementById('svcModalOverlay').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSvcModal() {
+        document.getElementById('svcModalOverlay').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSvcModal(); });
+</script>
 <?= $extraFooter ?? '' ?>
 </body>
 </html>

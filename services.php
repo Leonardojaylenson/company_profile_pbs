@@ -1,5 +1,4 @@
 <?php
-// services.php — All Services Page
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
@@ -10,8 +9,7 @@ $pageTitle = 'Layanan Kami';
 ?>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
-<!-- Page Header -->
-<section class="page-header pt-5 mt-5" >
+<section class="page-header pt-5 mt-5">
     <div class="page-header-overlay"></div>
     <div class="container page-header-content">
         <h1 class="page-header-title" data-aos="fade-up">Layanan Kami</h1>
@@ -35,7 +33,16 @@ $pageTitle = 'Layanan Kami';
         </div>
         <?php else: ?>
         <div class="row g-4">
-            <?php foreach ($services as $i => $svc): ?>
+            <?php foreach ($services as $i => $svc):
+                $features = json_decode($svc['features'] ?? '[]', true) ?? [];
+                $modalData = json_encode([
+                    'title'    => $svc['title'],
+                    'fullDesc' => $svc['full_desc'] ?? $svc['short_desc'] ?? '',
+                    'features' => $features,
+                    'image'    => !empty($svc['image']) ? uploadUrl($svc['image']) : '',
+                    'url'      => BASE_URL . '/contact.php?service=' . urlencode($svc['title']),
+                ]);
+            ?>
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?= ($i % 3) * 80 ?>" id="service-<?= $svc['id'] ?>">
                 <div class="service-card">
                     <?php if (!empty($svc['image'])): ?>
@@ -45,21 +52,10 @@ $pageTitle = 'Layanan Kami';
                     <?php endif; ?>
                     <div class="service-card-body">
                         <h3 class="service-card-title"><?= htmlspecialchars($svc['title']) ?></h3>
-                        
-                        <div class="mb-3">
-                            <?php if (!empty($svc['features'])):
-                                $features = json_decode($svc['features'], true) ?? [];
-                            ?>
-                            <ul class="service-features-mini">
-                                <?php foreach ($features as $f): ?>
-                                <li><i class="bi bi-check-circle-fill"></i> <?= htmlspecialchars($f) ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <?php endif; ?>
-                            <a href="<?= BASE_URL ?>/contact.php?service=<?= urlencode($svc['title']) ?>" class="service-card-link mt-auto">
-                                <i class="bi bi-headset me-1"></i> Konsultasi Layanan Ini
-                            </a>
-                        </div>
+                        <p class="service-card-desc"><?= htmlspecialchars(truncate($svc['short_desc'] ?? '', 120)) ?></p>
+                        <button class="svc-detail-btn" onclick='openServiceModal(<?= htmlspecialchars($modalData, ENT_QUOTES) ?>)'>
+                            <i class="bi bi-info-circle me-1"></i> Detail Layanan
+                        </button>
                     </div>
                 </div>
             </div>
@@ -68,6 +64,25 @@ $pageTitle = 'Layanan Kami';
         <?php endif; ?>
     </div>
 </section>
+
+<!-- Modal Detail Layanan -->
+<div class="svc-modal-overlay" id="svcModalOverlay" onclick="if(event.target===this)closeSvcModal()">
+    <div class="svc-modal">
+        <div id="svcModalImg"></div>
+        <div class="svc-modal-body">
+            <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+                <h4 class="svc-modal-title" id="svcModalTitle"></h4>
+                <button class="svc-modal-close" onclick="closeSvcModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <p class="svc-modal-desc" id="svcModalDesc"></p>
+            <p class="svc-modal-feat-label">Fitur Layanan</p>
+            <ul class="svc-modal-features" id="svcModalFeatures"></ul>
+            <a href="#" class="btn btn-primary" id="svcModalCta">
+                <i class="bi bi-headset me-2"></i> Konsultasi Layanan Ini
+            </a>
+        </div>
+    </div>
+</div>
 
 <!-- CTA -->
 <section class="cta-section">

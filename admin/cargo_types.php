@@ -1,5 +1,4 @@
 <?php
-// admin/cargo_types.php — CRUD Jenis Kargo
 require_once dirname(__DIR__) . '/config/database.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/functions.php';
@@ -7,16 +6,12 @@ requireAdminLogin();
 $admin = currentAdmin();
 $pdo   = getPDO();
 
-/* ═══════════════════════════════════════
-   DELETE
-═══════════════════════════════════════ */
 if (isset($_GET['delete'])) {
     $delId = (int)$_GET['delete'];
     $stmt  = $pdo->prepare("SELECT name FROM cargo_types WHERE id = ?");
     $stmt->execute([$delId]);
     $row = $stmt->fetch();
 
-    /* Cek apakah sudah dipakai di tabel messages */
     $used = $pdo->prepare("SELECT COUNT(*) FROM messages WHERE cargo_type_id = ?");
     $used->execute([$delId]);
     if ((int)$used->fetchColumn() > 0) {
@@ -32,9 +27,6 @@ if (isset($_GET['delete'])) {
     }
 }
 
-/* ═══════════════════════════════════════
-   TOGGLE AKTIF
-═══════════════════════════════════════ */
 if (isset($_GET['toggle'])) {
     $togId = (int)$_GET['toggle'];
     $stmt  = $pdo->prepare("SELECT name, is_active FROM cargo_types WHERE id = ?");
@@ -52,9 +44,6 @@ if (isset($_GET['toggle'])) {
     exit;
 }
 
-/* ═══════════════════════════════════════
-   CREATE / UPDATE
-═══════════════════════════════════════ */
 $success = $error ?? '';
 $error   = $error ?? '';
 
@@ -66,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $is_active   = isset($_POST['is_active']) ? 1 : 0;
     $sort_order  = (int)($_POST['sort_order'] ?? 0);
 
-    /* Validasi */
     if (empty($name)) {
         $error = 'Nama jenis kargo wajib diisi.';
     } elseif (empty($code)) {
@@ -74,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!preg_match('/^[A-Z0-9_]{1,50}$/', $code)) {
         $error = 'Kode hanya boleh huruf kapital, angka, dan underscore (maks. 50 karakter).';
     } else {
-        /* Cek duplikasi kode (kecuali milik sendiri) */
         $chk = $pdo->prepare("SELECT id FROM cargo_types WHERE code = ? AND id != ?");
         $chk->execute([$code, $id]);
         if ($chk->fetch()) {

@@ -132,6 +132,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .btn-login:hover { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(200,32,45,0.45); }
         .btn-login:active { transform: translateY(0); }
+        .backlogin {
+            text-decoration: none;
+            color: rgba(255,255,255,0.45);
+            margin-top: 14px;
+            display: block;
+            text-align: center;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+        .backlogin:hover {
+            color: white;
+        }
 
         .alert-error {
             background: rgba(200,32,45,0.15);
@@ -184,6 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
             <button type="submit" class="btn-login"><i class="bi bi-box-arrow-in-right me-2"></i>Masuk ke Panel</button>
+            <a href="<?= BASE_URL ?>/index.php" class="backlogin">Back to Company Profile</a>
         </form>
     </div>
     <div class="footer-note">© <?= date('Y') ?> PT. Prima Bahari Sejahtera. All rights reserved.</div>
